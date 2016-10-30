@@ -30,7 +30,7 @@ def main():
     g = GitHub(username, password)
     status, data = g.issues.get(filter='subscribed', foobar='llama')
     print(status)
-    print(g.repos.allisonsteinmetz.JAM.contributors.get())
+    print(g.repos.allisonsteinmetz.JAM.collaborators.get())
     # url = urljoin(GitHub_API, "authorizations")
     # print(url)
     # payload = {}
