@@ -1,14 +1,15 @@
-GitHub_API = "Https://api.github.com"
+GitHub_API = "https://api.github.com"
 
 import requests, time
 import json
 import os
 import Globalss
-from urllib.parse import urljoin
+from urlparse import urljoin
+from requests.auth import HTTPBasicAuth
+from agithub.GitHub import GitHub
 
-
-username = input('Github username: ')
-password = input('password: ')
+username = raw_input('Github username: ')
+password = raw_input('password: ')
 msg = ""
 #JAM_SECRET = 'test1'
 #secret = os.environ['JAM_SECRET']
@@ -19,27 +20,33 @@ def getAuthCode():
         "response_typpe" : "code",
         "client_id" : client_id,
         "redirect_uri": redirect_uri,
-        "scope": (r"https://www.google.com")
+        "scope": ("https://www.google.com")
     }
 
     r = requests.get(base_url + "auth?%s" % urlencode(authorization_code_req),
         allow_redirects=False)
 
 def main():
-    url = urljoin(GitHub_API, "Authorization")
-    payload = {}
-    res = requests.post (
-        url,
-        auth = (username, password),
-        data = json.dumps(payload),
-    )
-    j = json.loads(res.text)
-    if(res.status_code >= 400
-        msg = j.get('message', 'UNDEFINED ERROR (no error description from server)')
-        print ('error: %s' %msg)
-        return
-    token = j['token']
-    print ('New token: %s' % token)
+    g = GitHub(username, password)
+    status, data = g.issues.get(filter='subscribed', foobar='llama')
+    print(status)
+    print(g.repos.allisonsteinmetz.JAM.contributors.get())
+    # url = urljoin(GitHub_API, "authorizations")
+    # print(url)
+    # payload = {}
+    # res = requests.post (
+    #     "https://github.com/login/oauth/authorize?client_id=060bd7a32bdca5ebda07",
+    #     auth = HTTPBasicAuth(username, password),
+    #     data = json.dumps(payload),
+    # )
+    # print(res.text)
+    # j = json.loads(res.text)
+    # if res.status_code >= 400:
+    #     msg = j.get('message', 'UNDEFINED ERROR (no error description from server)')
+    #     print ('error: %s' %msg)
+    #     return
+    # token = j['token']
+    # print ('New token: %s' % token)
 
-if __name__ == '__main__':
-    main()
+#if __name__ == '__main__':
+main()
