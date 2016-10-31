@@ -29,4 +29,4 @@ def main(): #main is basically the test case for this code
     pw = raw_input('password: ')
     print (G_Auth(user, pw))
 
-#main()
+main()
