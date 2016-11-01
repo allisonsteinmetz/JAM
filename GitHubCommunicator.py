@@ -11,18 +11,14 @@ def G_Auth(UN, PW):
         return status
 
 def getUsers(g):
-    output = ''.join(map(str, g.repos.allisonsteinmetz.JAM.collaborators.get()))  #turn the tuple into a string
-    lookfor = "u'login'"    #this appears just before every username
-    nextspot = 0    #nextspot keeps track of the current spot we're finding. We don't want to find duplicates.
-    userlist = []
-    while(nextspot != -1):  #nextspot returns -1 if no more names were found.
-        nextspot = output.find(lookfor, nextspot+1)   #finds the lookfor phrase, starting after the current nextspot location
-        if (nextspot == -1):
-            break
-        tempstring = output[(nextspot+12):(nextspot+52)]   #removes all the jargon before a username, and limits it to the maximum amount of username chars (+1)
-        userlist.append(tempstring.partition("'")[0] )  #puts all the usernames into a list.
-    #print(userlist)
-    return userlist
+    status, data = g.repos.allisonsteinmetz.JAM.collaborators.get()
+    if status == 200:
+        userlist = []
+        for user in data:
+            userlist.append(str(user.get('login')))
+        return userlist
+    else:
+        return "Could not retireve users"
 
 def main(): #main is basically the test case for this code
     user = raw_input('Github username: ')
