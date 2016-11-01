@@ -2,9 +2,9 @@ import json
 import os
 from agithub.GitHub import GitHub
 
-def G_Auth(UN, PW):
-    g = GitHub(UN, PW)  #use the inputted username and password to authenticate
-    status, data = g.issues.get(filter='subscribed', foobar='llama')
+def gAuth(user, password):
+    g = GitHub(user, password)  #use the inputted username and password to authenticate
+    status, data = g.issues.get()
     if(status < 400):
         return getUsers(g)
     else:
@@ -18,11 +18,11 @@ def getUsers(g):
             userlist.append(str(user.get('login')))
         return userlist
     else:
-        return "Could not retireve users"
+        return "Could not retrieve users"
 
 def main(): #main is basically the test case for this code
     user = raw_input('Github username: ')
     pw = raw_input('password: ')
-    print (G_Auth(user, pw))
+    print (gAuth(user, pw))
 
 main()
