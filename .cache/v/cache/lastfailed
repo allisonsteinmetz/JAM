@@ -1,1 +1,4 @@
-{}
+{
+  "test.py::test_auth": true, 
+  "test.py::test_getUsers": true
+}

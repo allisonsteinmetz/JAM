@@ -3,7 +3,6 @@ import os
 from agithub.GitHub import GitHub
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
-from flask import render_template
 
 app = Flask(__name__)
 
@@ -44,7 +43,6 @@ def getUsers(g):
         userlist = []
         for user in data:
             userlist.append(str(user.get('login')))
-        print(userlist)
         return userlist
     else:
         return "Could not retrieve users"
@@ -53,7 +51,6 @@ def getUsers(g):
 @app.route('/')
 def hello():
     return 'Test Homepage'
-
 
 #debug gives you information if a page fails to load.
 #port number is your choice - I had to keep changing it to avoid caching (I think?) errors.
