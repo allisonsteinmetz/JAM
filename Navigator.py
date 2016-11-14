@@ -2,6 +2,8 @@
 from GitHubCommunicator import authenticate
 from DataRetriever import retrieveProjs, retrieveOrgs, retrieveUsers, retrieveMerges, retrieveCommits, retrieveLanguages, retrieveCommits, retrieveRepositories
 
+token = "No token"
+
 @app.route('/')
 def homepage():
     return render_template('home.html')
@@ -9,9 +11,10 @@ def homepage():
 def auth(user, pw):
     token = authenticate(user, pw)
     if(token == False):
+        token = "No token"
         #return error message
     else:
-        #display search page
+        #return success message
 
 def showSearch():
     #show search page

@@ -12,7 +12,7 @@ app = Flask(__name__)
 def authenticate(user, pwd):
     g = GitHub(user, pwd)  #use the entered username and password to authenticate
     status, data = g.issues.get() #get the status
-    if(status < 400):   #if the statue was not an error
+    if(status < 400):   #if the status was not an error
         return g    #return the token
     else:   #if it was an error
         return False    #return false
