@@ -3,8 +3,20 @@ import os
 from agithub.GitHub import GitHub
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
+from flask.ext.mysql import MySQL
 
 app = Flask(__name__)
+mysql = MySQL()
+
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'german2013'
+app.config['MYSQL_DATABASE_DB'] = 'BucketList'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+mysql.init_app(app)
+
+conn = mysql.connect()
+cursor = conn.cursor()
+
 
 #Authenticates a user based on username and password.
 #invalid credentials currently reloads the page.
@@ -27,6 +39,10 @@ def login():
     if request.method == 'POST': #if submit button was pressed
         username = request.form['username'] #read username
         password = request.form['pwd']  #read password
+        cursor.callproc('sp_createUser',(username,'ams5101@hotmail.com',password))
+        conn.commit()
+        data = cursor.fetchall()
+        print(data)
         token = authenticate(username, password)    #call our authentication
         if (token == False):    #if the credentials were incorrect
             return render_template('index.html')    #reload the page
