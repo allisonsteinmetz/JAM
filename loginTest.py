@@ -13,4 +13,4 @@ username.send_keys(real_user)
 password = browser.find_element_by_name('pwd') # Find the password box
 password.send_keys(real_pass + Keys.RETURN)
 
-browser.quit()
+#browser.quit()
