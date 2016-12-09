@@ -10,7 +10,7 @@ mysql = MySQL()
 
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'german2013'
-app.config['MYSQL_DATABASE_DB'] = 'BucketList'
+app.config['MYSQL_DATABASE_DB'] = 'Proj_Test'  #Alli's Machine - "BucketList"
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
@@ -39,10 +39,16 @@ def login():
     if request.method == 'POST': #if submit button was pressed
         username = request.form['username'] #read username
         password = request.form['pwd']  #read password
-        cursor.callproc('sp_createUser',(username,'ams5101@hotmail.com',password))
+        #cursor.callproc('sp_createUser',(username,'ams5101@hotmail.com',password))     ---This is for Alli's Machine
+        args = 'Proj_Test'
+        cursor.callproc('store_proj_v2', ([args,]))
+        cursor.execute ("SELECT proj_id, test_data FROM Project")
         conn.commit()
         data = cursor.fetchall()
-        print(data)
+        for row in data :
+            print row[0], row[1]
+
+
         token = authenticate(username, password)    #call our authentication
         if (token == False):    #if the credentials were incorrect
             return render_template('index.html')    #reload the page
@@ -71,4 +77,4 @@ def hello():
 #debug gives you information if a page fails to load.
 #port number is your choice - I had to keep changing it to avoid caching (I think?) errors.
 if __name__ == '__main__':
-    app.run(debug=False, port = 4979)
+    app.run(debug=False, port = 4973)

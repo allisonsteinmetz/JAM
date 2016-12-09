@@ -1,0 +1,27 @@
+Login to MySQL
+
+Call this all this stuff. Anything seperated by a gap means make sure the previous finished first:
+
+CREATE DATABASE Proj_Test
+
+USE Proj_Test;
+
+CREATE TABLE `Proj_Test`.`Project` (
+`proj_id` BIGINT UNIQUE AUTO_INCREMENT,
+`test_data` VARCHAR(45) NULL,
+PRIMARY KEY (`proj_id`));
+
+DELIMITER //
+CREATE PROCEDURE store_proj_v2
+(IN testdata VARCHAR(20))
+BEGIN
+insert into Project ( test_data )
+values (testdata);
+END //
+DELIMITER ;
+
+Test to ensure it all works:
+
+call store_proj_v2 ("Test")
+
+SELECT proj_id, test_data FROM Project;
