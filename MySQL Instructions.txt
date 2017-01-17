@@ -2,7 +2,7 @@ Login to MySQL
 
 Call this all this stuff. Anything seperated by a gap means make sure the previous finished first:
 
-CREATE DATABASE Proj_Test
+CREATE DATABASE Proj_Test;
 
 USE Proj_Test;
 
@@ -22,6 +22,6 @@ DELIMITER ;
 
 Test to ensure it all works:
 
-call store_proj_v2 ("Test")
+call store_proj_v2 ("Test”);
 
 SELECT proj_id, test_data FROM Project;

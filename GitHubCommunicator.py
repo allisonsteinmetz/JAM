@@ -10,7 +10,7 @@ mysql = MySQL()
 
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'german2013'
-app.config['MYSQL_DATABASE_DB'] = 'Proj_Test'  #Alli's Machine - "BucketList"
+app.config['MYSQL_DATABASE_DB'] = 'Proj_Test'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
@@ -39,8 +39,8 @@ def login():
     if request.method == 'POST': #if submit button was pressed
         username = request.form['username'] #read username
         password = request.form['pwd']  #read password
-        #cursor.callproc('sp_createUser',(username,'ams5101@hotmail.com',password))     ---This is for Alli's Machine
-        args = 'Proj_Test'
+
+        args = 'Proj_Test3'
         cursor.callproc('store_proj_v2', ([args,]))
         cursor.execute ("SELECT proj_id, test_data FROM Project")
         conn.commit()
