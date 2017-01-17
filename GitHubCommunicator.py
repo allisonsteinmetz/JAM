@@ -91,11 +91,10 @@ def getRepoLanguages(g):
 def getCommits(g):
     status, data = g.repos.allisonsteinmetz.JAM.commits.get()
     if status == 200:
-        commitz = []
+        commits = []
         for commit in data:
-            commitz.append(commit.get('commit'))
-            #languages.append(str(language))
-        return commitz
+            commits.append(commit.get('commit'))
+        return commits
     else:
         return "Could not retrieve commits"
 
