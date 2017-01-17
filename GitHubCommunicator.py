@@ -54,8 +54,10 @@ def login():
             return render_template('index.html')    #reload the page
         else:   #if the credentials were correct
             userlist = getUsers(token)  #get the users
-            languages = getLanguages(token) # get languages used in repo
-            return redirect(url_for('success', data = userlist))    #return the success page with our userlist
+            languages = getRepoLanguages(token) # get languages used in repo
+            commits = getCommits(token) # get a list of commits
+            returnData = {'users': userlist, 'repoLanguages': languages, 'commits': commits}
+            return redirect(url_for('success', data = userlist))    # NEEDS TO RETURN RETURNDATA!!!!!
     else:
         return render_template('index.html')
 
@@ -76,16 +78,26 @@ def getUsers(g):
     else:
         return "Could not retrieve contributors"
 
-def getLanguages(g):
+def getRepoLanguages(g):
     status, data = g.repos.allisonsteinmetz.JAM.languages.get()
     if status == 200:
         languages = []
-        print(data)
         for language in data:
-            print(language)
-            #languages.append(language)
+            languages.append(str(language))
+        return languages
     else:
         return "Could not retrieve languages"
+
+def getCommits(g):
+    status, data = g.repos.allisonsteinmetz.JAM.commits.get()
+    if status == 200:
+        commitz = []
+        for commit in data:
+            commitz.append(commit.get('commit'))
+            #languages.append(str(language))
+        return commitz
+    else:
+        return "Could not retrieve commits"
 
 #just a homepage I was using for testing
 @app.route('/')
@@ -95,4 +107,4 @@ def hello():
 #debug gives you information if a page fails to load.
 #port number is your choice - I had to keep changing it to avoid caching (I think?) errors.
 if __name__ == '__main__':
-    app.run(debug=False, port = 4972)
+    app.run(debug=False, port = 5000)
