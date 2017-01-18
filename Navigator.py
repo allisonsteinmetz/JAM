@@ -5,11 +5,12 @@ from agithub.GitHub import GitHub
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
 from Authenticator import authenticate
-from DataRetriever import getProjects, getOrganizations, getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
+from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
 from Analyzer import analyzeData, trainData
 
 
 app = Flask(__name__)
+authToken = 'empty token'
 
 @app.route('/')
 def showHomepage():
@@ -20,12 +21,16 @@ def showLogin():
     if request.method == 'POST': #if submit button was pressed
         username = request.form['username'] #read username
         password = request.form['pwd']  #read password
+        global authToken
         authToken = authenticate(username, password)    #call our authentication
         if(authToken == False):
             #needs an error message
             return render_template('login.html')
         else:
             #ALL THIS STUFF WILL NEED TO BE DELETED ONCE THE PROJECT STARTS CALLING FROM THE CORRECT LOCATION
+            #project = input("Enter a project or organization")
+            #searchResults = search(project, 'projects')
+            #print(searchResults)
             projectName = 'allisonsteinmetz.JAM'
             printData = getProjectData(authToken, projectName)
             #replace the redirect below with a redirect to the search page instead, when it is complete.
@@ -75,9 +80,9 @@ def success(data):
 #this will be called from the POST of showSearch - when the button is pressed it should have these arguments to pass in.
 def search(criteria, type):
     if (type == "organizations"):
-        results = searchOrgs(criteria)
+        results = getOrganizations(authToken, criteria)
     else:
-        results = searchProjects(criteria)
+        results = getProjects(authToken, criteria)
     #display results
     return None
 

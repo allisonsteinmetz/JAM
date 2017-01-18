@@ -9,11 +9,6 @@ client = MongoClient('localhost', 27017)
 db = client.test_database
 token = 'nothing yet'
 
-def getProjects(g):
-    #this is for the search page
-    #find relevant projects, return them.
-    return None
-
 def getProjectData(g, name):
     global token
     token = g
@@ -32,11 +27,6 @@ def getProjectData(g, name):
     #     print(document)
     returnData = userList
     return returnData
-
-def getOrganizations(g):
-    #this is for the search page
-    #find relevant orgs, return them.
-    return None
 
 def getOrganizationData(g, name):
     global token
