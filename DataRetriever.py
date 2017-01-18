@@ -1,7 +1,12 @@
+import pymongo
+
 from agithub.GitHub import GitHub
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
+from pymongo import MongoClient
 
+client = MongoClient('localhost', 27017)
+db = client.test_database
 token = 'nothing yet'
 
 def getProjects(g):
@@ -20,9 +25,12 @@ def getProjectData(g, name):
     commitList = getCommits(owner, repo)
     #mergeList = getMerges(user, repo)
     commentList = getComments(owner, repo)
-    #returnData = {'users': userList, 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList}
+    returnData = {'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList}
+    db.rawData.insert_one(returnData)
+    # cursor = db.rawData.find()
+    # for document in cursor:
+    #     print(document)
     returnData = userList
-    #combine all the data and return it
     return returnData
 
 def getOrganizations(g):
@@ -80,7 +88,6 @@ def getMerges(owner, repo):
 def getComments(owner, repo):
     status, data = token.repos[owner][repo].comments.get()
     if status == 200:
-        print(data)
         comments = []
         for comment in data:
             comments.append(comment)
