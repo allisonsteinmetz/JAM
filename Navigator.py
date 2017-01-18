@@ -7,6 +7,7 @@ from flask import make_response
 from Authenticator import authenticate
 from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
 from Analyzer import analyzeData, trainData
+from SearchController import getOrganizations, getProjects
 
 
 app = Flask(__name__)
@@ -29,8 +30,8 @@ def showLogin():
         else:
             #ALL THIS STUFF WILL NEED TO BE DELETED ONCE THE PROJECT STARTS CALLING FROM THE CORRECT LOCATION
             #project = input("Enter a project or organization")
-            #searchResults = search(project, 'projects')
-            #print(searchResults)
+            searchResults = search('agithub', "organizations")
+            print(searchResults)
             projectName = 'allisonsteinmetz.JAM'
             printData = getProjectData(authToken, projectName)
             #replace the redirect below with a redirect to the search page instead, when it is complete.
@@ -84,11 +85,11 @@ def search(criteria, type):
     else:
         results = getProjects(authToken, criteria)
     #display results
-    return None
+    return results
 
 #another call from POST of showSearch - this is when a project is selected. The name and type should be known to pass as arguments.
-def select(name, type):
-    if (type == "organizations"):
+def select(name, searchType):
+    if (searchType == "organizations"):
         data = getOrgData(name)
         #store pre-analysis data to database
         analyzedData = analyzeOrg(data)

@@ -16,7 +16,6 @@ def getProjectData(g, name):
     owner = tempList[0]
     repo = tempList[1]
     userList = getUsers(owner, repo)
-    print(userList)
     repoLanguages = getRepoLanguages(owner, repo)
     commitList = getCommits(owner, repo)
     #mergeList = getMerges(user, repo)
