@@ -19,8 +19,8 @@ def getProjectData(g, name):
     repoLanguages = getRepoLanguages(user, repo)
     commitList = getCommits(user, repo)
     #mergeList = getMerges(user, repo)
-    #commentList = getComments(user, repo)
-    #returnData = {'users': userlist, 'repoLanguages': languages, 'commits': commits}
+    commentList = getComments(user, repo)
+    #returnData = {'users': userList, 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList}
     returnData = userList
     #combine all the data and return it
     return returnData
@@ -78,8 +78,15 @@ def getMerges(login, repo):
     return None
 
 def getComments(login, repo):
-    print('work in progress')
-    return None
+    status, data = token.repos[login][repo].comments.get()
+    if status == 200:
+        print(data)
+        comments = []
+        for comment in data:
+            comments.append(comment)
+        return comments
+    else:
+        return "Could not retrieve languages"
 
 def getRepositories(org):
     print ('work in progress')

@@ -26,7 +26,7 @@ def showLogin():
             return render_template('login.html')
         else:
             #ALL THIS STUFF WILL NEED TO BE DELETED ONCE THE PROJECT STARTS CALLING FROM THE CORRECT LOCATION
-            projectName = 'juicearific.Escargo'
+            projectName = 'allisonsteinmetz.JAM'
             printData = getProjectData(authToken, projectName)
             #replace the redirect below with a redirect to the search page instead, when it is complete.
             return redirect(url_for('success', data = printData))
@@ -110,4 +110,4 @@ def trainSystem(data):
 #debug gives you information if a page fails to load.
 #port number is your choice - I had to keep changing it to avoid caching (I think?) errors.
 if __name__ == '__main__':
-    app.run(debug=False, port = 4979)
+    app.run(debug=False, port = 5000)
