@@ -16,11 +16,12 @@ def getProjectData(g, name):
     owner = tempList[0]
     repo = tempList[1]
     userList = getUsers(owner, repo)
+    print(userList)
     repoLanguages = getRepoLanguages(owner, repo)
     commitList = getCommits(owner, repo)
     #mergeList = getMerges(user, repo)
     commentList = getComments(owner, repo)
-    returnData = {'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList}
+    returnData = {'users': list(userList), 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList}
     db.rawData.insert_one(returnData)
     # cursor = db.rawData.find()
     # for document in cursor:
