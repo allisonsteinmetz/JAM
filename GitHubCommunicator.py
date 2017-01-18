@@ -32,7 +32,7 @@ def authenticate(user, pwd):
 #prints out the data on a success page
 @app.route('/success/<data>')
 def success(data):
-    return render_template('success.html', output=data) #calls the success.html page and feeds it the userlist as an argument
+    return render_template('login_success.html', output=data) #calls the success.html page and feeds it the userlist as an argument
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -51,7 +51,7 @@ def login():
 
         token = authenticate(username, password)    #call our authentication
         if (token == False):    #if the credentials were incorrect
-            return render_template('index.html')    #reload the page
+            return render_template('login.html')    #reload the page
         else:   #if the credentials were correct
             userlist = getUsers(token)  #get the users
             languages = getRepoLanguages(token) # get languages used in repo
@@ -59,18 +59,22 @@ def login():
             returnData = {'users': userlist, 'repoLanguages': languages, 'commits': commits}
             return redirect(url_for('success', data = userlist))    # NEEDS TO RETURN RETURNDATA!!!!!
     else:
-        return render_template('index.html')
+        return render_template('login.html')
 
 #gets a list of users from our predefined project.
 def getUsers(g):
-    status, data = g.repos.allisonsteinmetz.JAM.collaborators.get()
+    login = 'allisonsteinmetz'
+    repo = 'JAM'
+    #status, data = g.repos.allisonsteinmetz.JAM.collaborators.get()
+    status, data = g.repos[login][repo].collaborators.get()
     if status == 200:
         userlist = set()
         for user in data:
             userlist.add(str(user.get('login')))
     else:
         return "Could not retrieve collaborators"
-    status, data = g.repos.allisonsteinmetz.JAM.contributors.get()
+    #status, data = g.repos.allisonsteinmetz.JAM.contributors.get()
+    status, data = g.repos[login][repo].contributors.get()
     if status == 200:
         for user in data:
             userlist.add(str(user.get('login')))
@@ -106,4 +110,4 @@ def hello():
 #debug gives you information if a page fails to load.
 #port number is your choice - I had to keep changing it to avoid caching (I think?) errors.
 if __name__ == '__main__':
-    app.run(debug=False, port = 5000)
+    app.run(debug=False, port = 4998)
