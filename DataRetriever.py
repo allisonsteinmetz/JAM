@@ -13,13 +13,13 @@ def getProjectData(g, name):
     global token
     token = g
     tempList = name.split(".")
-    user = tempList[0]
+    owner = tempList[0]
     repo = tempList[1]
-    userList = getUsers(user, repo)
-    repoLanguages = getRepoLanguages(user, repo)
-    commitList = getCommits(user, repo)
+    userList = getUsers(owner, repo)
+    repoLanguages = getRepoLanguages(owner, repo)
+    commitList = getCommits(owner, repo)
     #mergeList = getMerges(user, repo)
-    commentList = getComments(user, repo)
+    commentList = getComments(owner, repo)
     #returnData = {'users': userList, 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList}
     returnData = userList
     #combine all the data and return it
@@ -37,15 +37,15 @@ def getOrganizationData(g, name):
     #for each repo, do the things we do in "getProjectData". Then combine all the data together for analysis.
     return None
 
-def getUsers(login, repo):    #get a list of all the users in a project. That means collaboratros and contributors, maybe also subscribers later.
-    status, data = token.repos[login][repo].collaborators.get()
+def getUsers(owner, repo):    #get a list of all the users in a project. That means collaboratros and contributors, maybe also subscribers later.
+    status, data = token.repos[owner][repo].collaborators.get()
     if status == 200:
         userlist = set()
         for user in data:
             userlist.add(str(user.get('login')))
     else:
         return "Could not retrieve collaborators"
-    status, data = token.repos[login][repo].contributors.get()
+    status, data = token.repos[owner][repo].contributors.get()
     if status == 200:
         for user in data:
             userlist.add(str(user.get('login')))
@@ -53,8 +53,8 @@ def getUsers(login, repo):    #get a list of all the users in a project. That me
     else:
         return "Could not retrieve contributors"
 
-def getRepoLanguages(login, repo):
-    status, data = token.repos[login][repo].languages.get()
+def getRepoLanguages(owner, repo):
+    status, data = token.repos[owner][repo].languages.get()
     if status == 200:
         languages = []
         for language in data:
@@ -63,8 +63,8 @@ def getRepoLanguages(login, repo):
     else:
         return "Could not retrieve languages"
 
-def getCommits(login, repo):
-    status, data = token.repos[login][repo].commits.get()
+def getCommits(owner, repo):
+    status, data = token.repos[owner][repo].commits.get()
     if status == 200:
         commits = []
         for commit in data:
@@ -73,12 +73,12 @@ def getCommits(login, repo):
     else:
         return "Could not retrieve commits"
 
-def getMerges(login, repo):
+def getMerges(owner, repo):
     print('work in progress')
     return None
 
-def getComments(login, repo):
-    status, data = token.repos[login][repo].comments.get()
+def getComments(owner, repo):
+    status, data = token.repos[owner][repo].comments.get()
     if status == 200:
         print(data)
         comments = []
