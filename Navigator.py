@@ -30,9 +30,9 @@ def showLogin():
         else:
             #ALL THIS STUFF WILL NEED TO BE DELETED ONCE THE PROJECT STARTS CALLING FROM THE CORRECT LOCATION
             #project = input("Enter a project or organization")
-            searchResults = search('agithub', "organizations")
-            print(searchResults)
-            projectName = 'allisonsteinmetz.JAM'
+            # searchResults = search('agithub', "organizations")
+            # print(searchResults)
+            projectName = 'allisonsteinmetz/JAM'
             printData = getProjectData(authToken, projectName)
             #replace the redirect below with a redirect to the search page instead, when it is complete.
             return redirect(url_for('success', data = printData))

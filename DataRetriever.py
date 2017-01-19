@@ -7,12 +7,14 @@ from pymongo import MongoClient
 
 client = MongoClient('localhost', 27017)
 db = client.test_database
+result = db.rawData.delete_many({})
+
 token = 'nothing yet'
 
 def getProjectData(g, name):
     global token
     token = g
-    tempList = name.split(".")
+    tempList = name.split("/")
     owner = tempList[0]
     repo = tempList[1]
     userList = getUsers(owner, repo)
@@ -21,10 +23,14 @@ def getProjectData(g, name):
     #mergeList = getMerges(user, repo)
     commentList = getComments(owner, repo)
     returnData = {'users': list(userList), 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList}
-    db.rawData.insert_one(returnData)
-    # cursor = db.rawData.find()
-    # for document in cursor:
-    #     print(document)
+    projectData = {name: returnData}
+    if db.rawData.find({name:{'$exists': 1}}):
+        db.rawData.insert_one(projectData)
+    else:
+        db.rawData.replace_one({'name':name}, projectData)
+    cursor = db.rawData.find({name:{'$exists': 1}})
+    for document in cursor:
+        print(document)
     returnData = userList
     return returnData
 
