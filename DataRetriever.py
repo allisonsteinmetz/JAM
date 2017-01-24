@@ -38,8 +38,10 @@ def getOrganizationData(g, name):
     global token
     token = g
     repoList = getRepositories(name)
+    for repo in repoList:
+        dataPost = getProjectData(token, repo)
     #for each repo, do the things we do in "getProjectData". Then combine all the data together for analysis.
-    return None
+    return repoList
 
 def getUsers(owner, repo):    #get a list of all the users in a project. That means collaboratros and contributors, maybe also subscribers later.
     status, data = token.repos[owner][repo].collaborators.get()
@@ -89,9 +91,14 @@ def getComments(owner, repo):
             comments.append(comment)
         return comments
     else:
-        return "Could not retrieve languages"
+        return "Could not retrieve comments"
 
 def getRepositories(org):
     status, data = token.orgs[org].repos.get()
-    print(data)
-    return None
+    if status == 200:
+        repos = []
+        for repo in data:
+            repos.append(str(repo.get('full_name')))
+        return repos
+    else:
+        return "Could not retrieve organization's repositories"
