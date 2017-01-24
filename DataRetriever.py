@@ -92,5 +92,6 @@ def getComments(owner, repo):
         return "Could not retrieve languages"
 
 def getRepositories(org):
-    print ('work in progress')
+    status, data = token.orgs[org].repos.get()
+    print(data)
     return None

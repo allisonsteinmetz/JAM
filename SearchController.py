@@ -3,6 +3,18 @@ from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
 
 def getOrganizations(token, name):
+    status, data = token.search.users.get(q = name)
+    if status == 200:
+        items = data.get('items')
+        orgs = []
+        for org in items:
+            orgs.append(org.get('login'))
+        return orgs
+        # returns a list of match org names
+    else:
+        return "Could not retrieve organizations"
+
+def getProjects(token, name):
     status, data = token.search.repositories.get(q = name)
     if status == 200:
         items = data.get('items')
@@ -10,12 +22,6 @@ def getOrganizations(token, name):
         for item in items:
             projects.append(item.get('full_name'))
         return projects
+        # returns a list of match project names
     else:
-        return "Could not retrieve organizations"
-    #this is for the search page
-    #find relevant orgs, return them.
-
-def getProjects(token, name):
-    #this is for the search page
-    #find relevant projects, return them.
-    return None
+        return "Could not retrieve projects"
