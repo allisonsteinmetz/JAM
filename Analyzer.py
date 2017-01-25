@@ -22,6 +22,10 @@ def trainData(data):
     #this is going to be training the system
     #load in a file named after a programming language
     #file will be formatted as such:
+    #alli pointed out we may be able to look at the file name. I will be looking into this soon.
+    #GUARANTEED:
+    #word, word, word...
+    #etc.
     #ACCEPTED:
     #word, word, word, word, word, word...
     #word, word, word, word, word, word...

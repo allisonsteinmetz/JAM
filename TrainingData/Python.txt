@@ -1,0 +1,8 @@
+GUARANTEED:
+__main__, .py
+
+ACCEPTABLE:
+def, import, global
+
+UNACCEPTABLE:
+printf,
