@@ -10,6 +10,7 @@ db = client.test_database
 result = db.rawData.delete_many({})
 
 token = 'nothing yet'
+passed = False
 
 def getProjectData(g, name):
     global token
@@ -22,6 +23,8 @@ def getProjectData(g, name):
     commitList = getCommits(owner, repo)
     #mergeList = getMerges(user, repo)
     commentList = getComments(owner, repo)
+    global passed
+    passed = True
     returnData = {'users': list(userList), 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList}
     projectData = {name: returnData}
     if db.rawData.find({name:{'$exists': 1}}):

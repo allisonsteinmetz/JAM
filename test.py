@@ -19,7 +19,12 @@ def test_auth():
     assert Authenticator.authenticate(fake_user, fake_pass) == False
 
 def test_getProjectData():
-    assert DataRetriever.getProjectData(token, real_name) == real_user_list
+    DataRetriever.getProjectData(token, real_name)
+    assert DataRetriever.passed == True
+
+def test_getOrganizationData():
+    DataRetriever.getProjectData(token, real_name)
+    assert DataRetriever.passed == True
 
 def test_searchProjects():
     SearchController.getProjects(token, real_proj_name)
