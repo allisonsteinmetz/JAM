@@ -10,9 +10,8 @@ fake_user = 'fake_username'
 fake_pass = 'fake_password'
 real_name = 'allisonsteinmetz/JAM'
 real_proj_name = 'agithub'
-real_project_list = ['jpaugh/agithub', 'AGithub457/AGithub457.github.io', '37acoder/37Agithub', 'martinssegudo/RepositorioLocal', 'ahanekom/e4agithub', 'cs-abdulwahab/SecAGithubProjectDemo', 'NorthwestDeveloper/aGithubDemo']
+real_org_name = 'MyPureCloud'
 real_user_list = set(["allisonsteinmetz", "Juicearific", "MananVPatel"])
-real_orgs_list = ["MyPureCloud"]
 
 token = Authenticator.authenticate(real_user, real_pass)
 def test_auth():
@@ -27,5 +26,5 @@ def test_searchProjects():
     assert SearchController.passed == True
 
 def test_searchOrganizations():
-    SearchController.getOrganizations(token, 'MyPureCloud')
+    SearchController.getOrganizations(token, real_org_name)
     assert SearchController.passed == True
