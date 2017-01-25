@@ -2,9 +2,13 @@ from agithub.GitHub import GitHub
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
 
+passed = False
+
 def getOrganizations(token, name):
     status, data = token.search.users.get(q = name)
     if status == 200:
+        global passed
+        passed = True
         items = data.get('items')
         orgs = []
         for org in items:
@@ -17,6 +21,8 @@ def getOrganizations(token, name):
 def getProjects(token, name):
     status, data = token.search.repositories.get(q = name)
     if status == 200:
+        global passed
+        passed = True
         items = data.get('items')
         projects = []
         for item in items:
