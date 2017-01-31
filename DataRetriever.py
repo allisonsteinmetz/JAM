@@ -43,7 +43,6 @@ def getOrganizationData(g, name):
     repoList = getRepositories(name)
     for repo in repoList:
         dataPost = getProjectData(token, repo)
-    #for each repo, do the things we do in "getProjectData". Then combine all the data together for analysis.
     return repoList
 
 def getUsers(owner, repo):    #get a list of all the users in a project. That means collaboratros and contributors, maybe also subscribers later.
