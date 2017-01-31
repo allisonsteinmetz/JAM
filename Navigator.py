@@ -14,7 +14,7 @@ authToken = 'empty token'
 
 @app.route('/')
 def showHomepage():
-    return render_template('home.html')
+    return render_template('homepage.html')
 
 @app.route('/login/', methods=['GET', 'POST'])
 def showLogin():
@@ -37,6 +37,7 @@ def showLogin():
             printData = getProjectData(authToken, projectName)
             # printDatas = getOrganizationData(authToken, 'railsbridge-montreal')
             #replace the redirect below with a redirect to the search page instead, when it is complete.
+            #return redirect(url_for('showHomepage'))
             return redirect(url_for('success', data = printData))
     else: #if the user just wanted to load the page, load the page.
         return render_template('login.html')
