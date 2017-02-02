@@ -11,3 +11,7 @@ if __name__ == '__main__':
     for i in projData:
         arglist.append(i.get('message').encode('utf-8'))
     analyzeData(arglist)
+
+    #IN ORDER FOR THIS CODE TO WORK CURRENTLY:
+    #DataRetriever must return the commitList. This could be adapted for a bulk return, but commits need to be returned for the demo.
+    #otherwise, it should work just fine. Run this code instead of the navigator to demo.
