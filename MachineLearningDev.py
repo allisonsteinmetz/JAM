@@ -9,6 +9,5 @@ if __name__ == '__main__':
     projData = getProjectData(authToken, 'allisonsteinmetz/JAM')
     arglist = []
     for i in projData:
-        arglist.append(i.get('message'))
-    print(arglist[2])
+        arglist.append(i.get('message').encode('utf-8'))
     analyzeData(arglist)

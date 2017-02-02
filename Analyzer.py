@@ -10,7 +10,7 @@ def analyzeData(data):
     #       stop_words='english', vocabulary=vocabulary, input='content')
     #analyzedData = vect.fit_transform(data).toarray()
     #print(analyzedData)
-    vocab = ['test', 'tests']
+    vocab = ['alli', 'github', 'josh', 'flask', 'the']
     vectorizer = CountVectorizer(min_df=1, vocabulary = vocab)
     x = vectorizer.fit_transform(data)
     analyzedData = x.toarray()
