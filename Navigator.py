@@ -13,12 +13,20 @@ from SearchController import getOrganizations, getProjects
 app = Flask(__name__)
 authToken = 'empty token'
 
-@app.route('/')
-def showHomepage():
-    return render_template('homepage.html')
+@app.route('/', methods=['GET', 'POST'])
+def homepage():
+    if authToken == 'empty token':
+        return redirect(url_for('login'))
+    else:
+        if request.method == 'POST':
+            searchKey = request.form['searchKey']
+            searchType = request.form['searchType']
+            return redirect(url_for('search', searchType=searchType, searchKey=searchKey))
+        else:
+            return render_template('homepage.html')
 
 @app.route('/login/', methods=['GET', 'POST'])
-def showLogin():
+def login():
     if request.method == 'POST': #if submit button was pressed
         username = request.form['username'] #read username
         password = request.form['pwd']  #read password
@@ -38,18 +46,20 @@ def showLogin():
             printData = getProjectData(authToken, projectName)
             # printDatas = getOrganizationData(authToken, 'railsbridge-montreal')
             #replace the redirect below with a redirect to the search page instead, when it is complete.
-            #return redirect(url_for('showHomepage'))
-            return redirect(url_for('success', data = printData))
+            return redirect(url_for('homepage'))
+            #return redirect(url_for('success', data = printData))
     else: #if the user just wanted to load the page, load the page.
         return render_template('login.html')
 
-@app.route('/search/<searchfield>')
-def showSearch():
-    if request.method == 'POST': #if search button was pressed
-        #Do searchy stuff here
-        print("search-post placeholder")
-    else: #if the page is being redirected to, display a search page with nothing in the search field yet.
-        return render_template('search.html', output='')
+@app.route('/search/<searchType>/<searchKey>')
+def search(searchType, searchKey):
+    if (searchType == "organizations"):
+        results = getOrganizations(authToken, searchKey)
+    else:
+        results = getProjects(authToken, searchKey)
+    #display results
+    print(results)
+    return render_template('search.html')
 
 @app.route('/projectUsers/<projname>')
 def showUsers(info):
@@ -82,15 +92,6 @@ def showContribution(name):
 def success(data):
     return render_template('login_success.html', output=data) #calls the success.html page and feeds it the userlist as an argument
 
-#this will be called from the POST of showSearch - when the button is pressed it should have these arguments to pass in.
-def search(criteria, type):
-    if (type == "organizations"):
-        results = getOrganizations(authToken, criteria)
-    else:
-        results = getProjects(authToken, criteria)
-    #display results
-    return results
-
 #another call from POST of showSearch - this is when a project is selected. The name and type should be known to pass as arguments.
 def select(name, searchType):
     if (searchType == "organizations"):
@@ -102,8 +103,7 @@ def select(name, searchType):
         #store pre-analysis data to database
         analyzedData = analyzeProject(data)
     #store analyzed data to database
-    showUsers(analyzedData)
-    return None
+    return analyzedData
 
 def storePreAnalysisData(data):
     #store data to correct spot in database
