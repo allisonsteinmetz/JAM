@@ -1,0 +1,9 @@
+commits - accepted, lines of code
+merges
+comments
+
+----Calculate for each user----
+commits - if not accepted, worth 1/100
+commits = ((lines of code - (blank entries + comments))/ 25)
+merges = (# merges / 5)
+comments = (# of comments / 25)
