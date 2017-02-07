@@ -34,7 +34,7 @@ def getProjectData(g, name):
     cursor = db.rawData.find({name:{'$exists': 1}})
     for document in cursor:
         print(document)
-    returnData = userList
+    returnData = commitList
     return returnData
 
 def getOrganizationData(g, name):
