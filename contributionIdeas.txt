@@ -3,7 +3,26 @@ merges
 comments
 
 ----Calculate for each user----
-commits - if not accepted, worth 1/100
-commits = ((lines of code - (blank entries + comments))/ 25)
-merges = (# merges / 5)
+commits - always accepted (what was I thinking - they just might be commited to a branch instead)
+commits = (changed lines of code) / 6
+merges = (# of files merged / 15)
 comments = (# of comments / 25)
+
+----Upon closer investigation----
+Merges are listed as commits. This is dangerous because it pads the stats of the branch owners, and they show up as being immensely contributive despite not contributing much.
+I believe there may be a way to tell a merge from a commit, maybe a 'commit type' if you will. Github states all their data by saying "excluding merges" - so I'd like to see if I can do the same.
+
+Running on the above assumption, I would like to say:
+
+commits should be based on lines of code. We will say ((lines removed + lines added)/6)). That is to say, points from commits = 1/6 per line of code changed.
+Merges are less important. I however noticed that merges often involve many files, but I have it listed as merges. We will instead differentiate files. We will say 1/15 per file merged.
+Comments are important, but even less so than merges. Comments indicate an interest in the file but not necessarily usefulness. This is why they are ranked low, say 1/25 per comment.
+
+Stretch goals I would like to do for contribution, but I would like to finish leadership/teams first:
+	Checking to see if a commit is kept when it is pushed into a merge. If it is, normal points. If not, reduced points.
+	reading into the changes within a commit to realize when a changed line is removing a blank line, for example.
+	Checking to see if files are merged together (not branches). Meaning, we take 3 files, and we turn it into 1. It registers as alot of removed code from multiple files and code added to one file, but realistically not much was done.
+	The reverse of the above. One file is split into many.
+	Rating merges. Merging from a sub-branch into a regular branch is less important than merging from a regular branch into main, for example.
+	Deciphering comments to determine when one is asking a question (less contribution) and one is answering a question (more contribution).
+
