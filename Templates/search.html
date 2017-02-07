@@ -1,10 +1,54 @@
 <html>
     <head>
         <title>Search</title>
-        <link rel="stylesheet" type="text/css" href="/static/main.css">
+        <link rel="stylesheet" type="text/css" href="/static/search.css">
+        <script type="text/javascript" src="/static/search.js"></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
 </head>
 <body>
-    <h1>This is the search page</h2>
+    <div class="container">
+        <div class="row">
+
+            <nav class="navbar navbar-default">
+                <div class="nav nav-justified navbar-nav">
+
+                    <form class="navbar-form navbar-search" id="search" method="post">
+                        <div class="input-group">
+
+                            <div class="input-group-btn">
+                                <select name="searchType" id="typeSelector" value="projects" class="selectpicker form-control">
+                                    <option value="projects">Projects</option>
+                                    <option value="organizations">Organizations</option>
+                                </select>
+                            </div>
+
+                            <input type="text" name="searchKey" class="form-control">
+
+                            <div class="input-group-btn">
+                                <button id="searchButton" type="button" class="btn btn-search btn-default">
+                                    GO
+                                </button>
+
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </nav>
+        </div>
+    </div>
+    <table>
+        <tbody>
+            {% for result in results %}
+                <tr>
+                    <td>{{ result }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

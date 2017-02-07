@@ -1,3 +1,11 @@
+table{
+  background-color: #e7e7e7;
+  border: 1px solid black;
+  padding: 100px;
+}
+tr {
+    height: 100px;
+}
 .navbar .navbar-search .dropdown-menu { min-width: 25px; }
 .dropdown-menu .label-icon { margin-left: 5px; }
 .btn-outline {

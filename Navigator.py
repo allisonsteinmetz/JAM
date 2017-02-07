@@ -2,7 +2,7 @@
 import json
 import os
 from agithub.GitHub import GitHub
-from flask import Flask, render_template, url_for,  redirect, request
+from flask import Flask, render_template, url_for,  redirect, request, json
 from flask import make_response
 from Authenticator import authenticate
 from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
@@ -59,7 +59,7 @@ def search(searchType, searchKey):
         results = getProjects(authToken, searchKey)
     #display results
     print(results)
-    return render_template('search.html')
+    return render_template('search.html', results = results)
 
 @app.route('/projectUsers/<projname>')
 def showUsers(info):
