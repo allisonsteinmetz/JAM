@@ -34,7 +34,6 @@ def getProjectData(g, name):
 #    cursor = db.rawData.find({name:{'$exists': 1}})
 #    for document in cursor:
 #        print(document)
-    returnData = commitList
     return returnData
 
 def getOrganizationData(g, name):
@@ -74,9 +73,16 @@ def getRepoLanguages(owner, repo):
 def getCommits(owner, repo):
     status, data = token.repos[owner][repo].commits.get()
     if status == 200:
+        codes = []
         commits = []
-        for commit in data:
-            commits.append(commit.get('commit'))
+        for comm in data:
+            codes.append(comm.get('sha'))
+        for sha in codes:
+            status, commit = token.repos[owner][repo].commits[sha].get()
+            if (commit.get('author') != None):
+                commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message'),
+                commit.get('stats').get('total'))
+                commits.append(commitData)
         return commits
     else:
         return "Could not retrieve commits"
