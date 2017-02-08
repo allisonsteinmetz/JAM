@@ -7,10 +7,7 @@ if __name__ == '__main__':
     password = 'demopw123'  #read password
     authToken = authenticate(username, password)
     projData = getProjectData(authToken, 'allisonsteinmetz/JAM')
-    arglist = []
-    for i in projData:
-        arglist.append(i.get('message').encode('utf-8'))
-    analyzeData(arglist)
+    analyzeData(projData)
 
     #IN ORDER FOR THIS CODE TO WORK CURRENTLY:
     #DataRetriever must return the commitList. This could be adapted for a bulk return, but commits need to be returned for the demo.

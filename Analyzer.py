@@ -4,12 +4,32 @@ from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 
 def analyzeData(data):
+    contData = calcContribution(data)
+    commitList = data.get('commits')
+    arglist = []
+    for i in commitList:
+        arglist.append(i[2].encode('utf-8'))
+    searchWords(arglist)
+
+def calcContribution(data):
+    commits = data.get('commits')
+    users = data.get('users')
+    #commDict = {}
+    #commDict.add(users[0]: )
+    #Create dictionary
+    #add each user and a list of ints (per) to the dictionary
+    #go through all commits, add to the appropriate list
+    print(commits)
+    print(users)
+
+def searchWords(data):
     #this is what will end up using scikit
     #vocabulary = "tests python javascript html test testing repositories".split()
     #vect = TfidfVectorizer(sublinear_tf=True, max_df=0.5, analyzer='word',
     #       stop_words='english', vocabulary=vocabulary, input='content')
     #analyzedData = vect.fit_transform(data).toarray()
     #print(analyzedData)
+
     vocab = ['alli', 'github', 'josh', 'flask', 'the']
     vectorizer = CountVectorizer(min_df=1, vocabulary = vocab)
     x = vectorizer.fit_transform(data)
