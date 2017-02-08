@@ -1,13 +1,13 @@
-import pymongo
+#import pymongo
 
 from agithub.GitHub import GitHub
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
-from pymongo import MongoClient
+#from pymongo import MongoClient
 
-client = MongoClient('localhost', 27017)
-db = client.test_database
-result = db.rawData.delete_many({})
+#client = MongoClient('localhost', 27017)
+#db = client.test_database
+#result = db.rawData.delete_many({})
 
 token = 'nothing yet'
 passed = False
@@ -26,14 +26,14 @@ def getProjectData(g, name):
     global passed
     passed = True
     returnData = {'users': list(userList), 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList}
-    projectData = {name: returnData}
-    if db.rawData.find({name:{'$exists': 1}}):
-        db.rawData.insert_one(projectData)
-    else:
-        db.rawData.replace_one({'name':name}, projectData)
-    cursor = db.rawData.find({name:{'$exists': 1}})
-    for document in cursor:
-        print(document)
+#    projectData = {name: returnData}
+#    if db.rawData.find({name:{'$exists': 1}}):
+#        db.rawData.insert_one(projectData)
+#    else:
+#        db.rawData.replace_one({'name':name}, projectData)
+#    cursor = db.rawData.find({name:{'$exists': 1}})
+#    for document in cursor:
+#        print(document)
     returnData = commitList
     return returnData
 
