@@ -83,6 +83,9 @@ def getCommits(owner, repo):
                 commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message'),
                 commit.get('stats').get('total'))
                 commits.append(commitData)
+            else:
+                commitData = ('Private User', 'Filler_Date', 'Filler_Msg', commit.get('stats').get('total'))
+                commits.append(commitData)
         return commits
     else:
         return "Could not retrieve commits"
