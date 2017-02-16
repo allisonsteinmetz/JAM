@@ -71,25 +71,38 @@ def getRepoLanguages(owner, repo):
         return "Could not retrieve languages"
 
 def getCommits(owner, repo):
-    status, data = token.repos[owner][repo].commits.get()
+    status, data = token.repos[owner][repo].commits.get(per_page='100')
     if status == 200:
-        codes = []
+        lastpage = 1
+        commitHeader = token.getheaders()
+        link = 'NULL'
+        for element in commitHeader:
+            if 'link' in element:
+                link = element
+        if link != 'NULL' :
+            lastpage = link[1].split('>')[1].split('=')[3]
         commits = []
-        for comm in data:
-            codes.append(comm.get('sha'))
-        for sha in codes:
-            status, commit = token.repos[owner][repo].commits[sha].get()
-            if (commit.get('committer') != None):
-                #print(commit.get('committer').get('login'))
-                print(commit.get('commit').get('committer').get('date'))
-                #print(commit.get('commit').get('message').encode('utf-8'))
-                commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message').encode('utf-8'),
-                commit.get('stats').get('total'))
-                commits.append(commitData)
-            else:
-                #print("Private User")
-                commitData = ('Private User', 'Filler_Date', 'Filler_Msg', commit.get('stats').get('total'))
-                commits.append(commitData)
+        i = 0
+        while i < lastpage :
+            print (i)
+            status, data = token.repos[owner][repo].commits.get(per_page='100', page=i)
+            codes = []
+            for comm in data:
+                codes.append(comm.get('sha'))
+            for sha in codes:
+                status, commit = token.repos[owner][repo].commits[sha].get()
+                if (commit.get('committer') != None):
+                    #print(commit.get('committer').get('login'))
+                    print(commit.get('commit').get('committer').get('date'))
+                    #print(commit.get('commit').get('message').encode('utf-8'))
+                    commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message').encode('utf-8'),
+                    commit.get('stats').get('total'))
+                    commits.append(commitData)
+                else:
+                    #print("Private User")
+                    commitData = ('Private User', 'Filler_Date', 'Filler_Msg', commit.get('stats').get('total'))
+                    commits.append(commitData)
+            i = i + 1
         return commits
     else:
         return "Could not retrieve commits"
