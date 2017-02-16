@@ -3,6 +3,7 @@ from flask import make_response
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 
+default = 0
 contDict = {}
 
 def analyzeData(data):
@@ -16,19 +17,29 @@ def analyzeData(data):
 def calcContribution(data):
     commits = data.get('commits')
     users = data.get('users')
+    comments = data.get('comments')
+    if(users == "-1"):
+        print("We could not complete user list")
+        return;
     for user in users:
+        #print(user)
         contDict[user] = 0
     contDict['Private User'] = 0
     for comm in commits:
         userLogin = comm[0]
+        print(userLogin)
         score = (comm[3] / 6)
-        existingScore = contDict[userLogin]
+        existingScore = contDict.setdefault(userLogin, 0)
         contDict[userLogin] = existingScore + score
+    for user in contDict:
+        print(user)
+        print(str(contDict.get(user)))
+        print(" ")
     #Create dictionary
     #add each user and a list of ints (per) to the dictionary
     #go through all commits, add to the appropriate list
-    print(commits)
-    print(users)
+    #print(commits)
+    #print(users)
 
 def searchWords(data):
     #this is what will end up using scikit

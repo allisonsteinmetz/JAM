@@ -51,14 +51,14 @@ def getUsers(owner, repo):    #get a list of all the users in a project. That me
         for user in data:
             userlist.add(str(user.get('login')))
     else:
-        return "Could not retrieve collaborators"
+        return "-1"
     status, data = token.repos[owner][repo].contributors.get()
     if status == 200:
         for user in data:
             userlist.add(str(user.get('login')))
         return userlist
     else:
-        return "Could not retrieve contributors"
+        return "-1"
 
 def getRepoLanguages(owner, repo):
     status, data = token.repos[owner][repo].languages.get()
@@ -79,11 +79,15 @@ def getCommits(owner, repo):
             codes.append(comm.get('sha'))
         for sha in codes:
             status, commit = token.repos[owner][repo].commits[sha].get()
-            if (commit.get('author') != None):
-                commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message'),
+            if (commit.get('committer') != None):
+                #print(commit.get('committer').get('login'))
+                print(commit.get('commit').get('committer').get('date'))
+                #print(commit.get('commit').get('message').encode('utf-8'))
+                commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message').encode('utf-8'),
                 commit.get('stats').get('total'))
                 commits.append(commitData)
             else:
+                #print("Private User")
                 commitData = ('Private User', 'Filler_Date', 'Filler_Msg', commit.get('stats').get('total'))
                 commits.append(commitData)
         return commits
