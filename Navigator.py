@@ -13,17 +13,12 @@ from SearchController import getOrganizations, getProjects
 app = Flask(__name__)
 authToken = 'empty token'
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def homepage():
     if authToken == 'empty token':
         return redirect(url_for('login'))
     else:
-        if request.method == 'POST':
-            searchKey = request.form['searchKey']
-            searchType = request.form['searchType']
-            return redirect(url_for('search', searchType=searchType, searchKey=searchKey))
-        else:
-            return render_template('homepage.html')
+        return render_template('homepage.html')
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -43,7 +38,7 @@ def login():
             # searchResults = search('agithub', "projects")
             # print(searchResults)
             projectName = 'allisonsteinmetz/JAM'
-            printData = getProjectData(authToken, projectName)
+            #printData = getProjectData(authToken, projectName)
             # printDatas = getOrganizationData(authToken, 'railsbridge-montreal')
             #replace the redirect below with a redirect to the search page instead, when it is complete.
             return redirect(url_for('homepage'))
@@ -51,15 +46,15 @@ def login():
     else: #if the user just wanted to load the page, load the page.
         return render_template('login.html')
 
-@app.route('/search/<searchType>/<searchKey>')
-def search(searchType, searchKey):
+@app.route('/search', methods=['POST'])
+def search():
+    searchKey = request.form['searchKey']
+    searchType = request.form['searchType']
     if (searchType == "organizations"):
         results = getOrganizations(authToken, searchKey)
     else:
         results = getProjects(authToken, searchKey)
-    #display results
-    print(results)
-    return render_template('search.html', results = results)
+    return json.dumps(results)
 
 @app.route('/projectUsers/<projname>')
 def showUsers(info):

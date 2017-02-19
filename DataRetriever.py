@@ -93,7 +93,7 @@ def getCommits(owner, repo):
                 status, commit = token.repos[owner][repo].commits[sha].get()
                 if (commit.get('committer') != None):
                     #print(commit.get('committer').get('login'))
-                    print(commit.get('commit').get('committer').get('date'))
+                    #print(commit.get('commit').get('committer').get('date'))
                     #print(commit.get('commit').get('message').encode('utf-8'))
                     commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message').encode('utf-8'),
                     commit.get('stats').get('total'))

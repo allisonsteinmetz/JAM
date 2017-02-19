@@ -6,7 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/static/search.css">
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="static/search.js"></script>
     </head>
     <body>
         <div class="container">
@@ -15,7 +16,7 @@
                 <nav class="navbar navbar-default">
                     <div class="nav nav-justified navbar-nav">
 
-                        <form class="navbar-form navbar-search" id="search" method="post">
+                        <form class="navbar-form navbar-search" id="searchForm" role="form">
                             <div class="input-group">
 
                                 <div class="input-group-btn">
@@ -28,18 +29,19 @@
                                 <input type="text" name="searchKey" class="form-control">
 
                                 <div class="input-group-btn">
-                                    <button id="searchButton" type="submit" class="btn btn-search btn-default">
+                                    <button id="searchButton" type="button" class="btn btn-search btn-default">
                                         GO
                                     </button>
-
                                 </div>
                             </div>
                         </form>
-
                     </div>
                 </nav>
             </div>
         </div>
-
+        <table id="searchResults">
+            <tbody>
+            </tbody>
+        </table>
     </body>
 </html>
