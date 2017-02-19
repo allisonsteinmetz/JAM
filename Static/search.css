@@ -12,6 +12,13 @@ td{
   padding: 20px;
   font-size: 16px;
 }
+.navbar.navbar-default{
+  background: #15566F;
+}
+.btn.btn-search.btn-default{
+  background: #33C0D7;
+  color: white;
+}
 .navbar .navbar-search .dropdown-menu { min-width: 25px; }
 .dropdown-menu .label-icon { margin-left: 5px; }
 .btn-outline {
