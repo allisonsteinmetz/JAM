@@ -27,14 +27,15 @@ def calcContribution(data):
     contDict['Private User'] = 0
     for comm in commits:
         userLogin = comm[0]
-        print(userLogin)
+        #print(userLogin)
         score = (comm[3] / 6)
         existingScore = contDict.setdefault(userLogin, 0)
         contDict[userLogin] = existingScore + score
-    for user in contDict:
-        print(user)
-        print(str(contDict.get(user)))
-        print(" ")
+    #for user in contDict:
+        #print(user)
+        #print(str(contDict.get(user)))
+        #print(" ")
+    return True;
     #Create dictionary
     #add each user and a list of ints (per) to the dictionary
     #go through all commits, add to the appropriate list
