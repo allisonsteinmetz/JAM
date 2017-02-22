@@ -5,23 +5,19 @@ from flask import Flask, render_template, url_for,  redirect, request, json
 from flask import make_response
 from Authenticator import authenticate
 from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
-#from Analyzer import analyzeData, trainData
+from Analyzer import analyzeData, trainData
 from SearchController import getOrganizations, getProjects
 import mysql.connector as mariadb
 import json
 import time
 
 now = time.strftime("%c")
-print "Current date & time " + time.strftime("%c")
+#print "Current date & time " + time.strftime("%c")
 
 app = Flask(__name__)
 authToken = 'empty token'
 
 @app.route('/')
-
-mariadb_connection = mariadb.connect(user='root', database='teamData')
-
-cursor = mariadb_connection.cursor()
 
 def homepage():
     if authToken == 'empty token':
@@ -126,10 +122,14 @@ def select(name, searchType):
     return analyzedData
 
 def storePreAnalysisData(repoName, data):
+    print repoName;
+    print now;
+    mariadb_connection = mariadb.connect(user='root', database='teamData')
+    cursor = mariadb_connection.cursor()
     sql = "INSERT INTO team (repositoryName, currentDate, teamInfo) VALUES (%s, %s, %s)"
     cursor.execute(sql, (repoName, now, json.dumps(data)))
 
-    cursor.commit()
+    mariadb_connection.commit()
     return None
 
 def storeAnalyzedData(data):
@@ -140,7 +140,8 @@ def trainSystem(data):
     #contact the analyzer for training
     return None
 
-mariadb_connection.close()
+#smariadb_connection.close()
+
 #debug gives you information if a page fails to load.
 #port number is your choice - I had to keep changing it to avoid caching (I think?) errors.
 if __name__ == '__main__':
