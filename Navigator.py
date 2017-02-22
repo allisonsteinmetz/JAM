@@ -1,19 +1,28 @@
 #THIS FUNCTION IS A WIP
-import json
 import os
 from agithub.GitHub import GitHub
 from flask import Flask, render_template, url_for,  redirect, request, json
 from flask import make_response
 from Authenticator import authenticate
 from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
-from Analyzer import analyzeData, trainData
+#from Analyzer import analyzeData, trainData
 from SearchController import getOrganizations, getProjects
+import mysql.connector as mariadb
+import json
+import time
 
+now = time.strftime("%c")
+print "Current date & time " + time.strftime("%c")
 
 app = Flask(__name__)
 authToken = 'empty token'
 
 @app.route('/')
+
+mariadb_connection = mariadb.connect(user='root', database='teamData')
+
+cursor = mariadb_connection.cursor()
+
 def homepage():
     if authToken == 'empty token':
         return redirect(url_for('login'))
@@ -111,11 +120,15 @@ def select(name, searchType):
         data = getProjectData(name)
         #store pre-analysis data to database
         analyzedData = analyzeProject(data)
+        #Login, leadership score, contribution score, teams, skills
     #store analyzed data to database
     return analyzedData
 
-def storePreAnalysisData(data):
-    #store data to correct spot in database
+def storePreAnalysisData(repoName, data):
+    sql = "INSERT INTO team (repositoryName, currentDate, teamInfo) VALUES (%s, %s, %s)"
+    cursor.execute(sql, (repoName, now, json.dumps(data)))
+
+    cursor.commit()
     return None
 
 def storeAnalyzedData(data):
@@ -126,6 +139,7 @@ def trainSystem(data):
     #contact the analyzer for training
     return None
 
+mariadb_connection.close()
 #debug gives you information if a page fails to load.
 #port number is your choice - I had to keep changing it to avoid caching (I think?) errors.
 if __name__ == '__main__':
