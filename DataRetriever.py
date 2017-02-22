@@ -84,7 +84,7 @@ def getCommits(owner, repo):
         commits = []
         i = 0
         while i < lastpage :
-            print (i)
+            #print (i)
             status, data = token.repos[owner][repo].commits.get(per_page='100', page=i)
             codes = []
             for comm in data:
@@ -95,12 +95,16 @@ def getCommits(owner, repo):
                     #print(commit.get('committer').get('login'))
                     #print(commit.get('commit').get('committer').get('date'))
                     #print(commit.get('commit').get('message').encode('utf-8'))
+                    filenames = []
+                    for f in commit.get('files') :
+                        filenames.append(f.get('filename'))
                     commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message').encode('utf-8'),
-                    commit.get('stats').get('total'))
+                        commit.get('stats').get('total'), filenames)
+                    #print(commitData)
                     commits.append(commitData)
                 else:
                     #print("Private User")
-                    commitData = ('Private User', 'Filler_Date', 'Filler_Msg', commit.get('stats').get('total'))
+                    commitData = ('Private User', 'Filler_Date', 'Filler_Msg', commit.get('stats').get('total'), 'X')
                     commits.append(commitData)
             i = i + 1
         return commits

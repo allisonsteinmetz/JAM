@@ -9,4 +9,9 @@ if __name__ == '__main__':
     projname = 'allisonsteinmetz/JAM'
     authToken = authenticate(username, password)
     projData = getProjectData(authToken, projname)
-    analyzeData(projData)
+    data = analyzeData(projData)
+    for user in data:
+        print(user.get('userLogin'))
+        print(user.get('contribution'))
+        for lang in user.get('languages'):
+            print(lang)

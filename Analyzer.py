@@ -1,13 +1,23 @@
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
-from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+#from sklearn.feature_extraction import DictVectorizer
+#from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 
 default = 0
 contDict = {}
-
+commitCount = {}
+userLangs = {}
+global users
 def analyzeData(data):
-    contData = calcContribution(data)
+    userStats = []
+    global users
+    users = data.get('users')
+    calcContribution(data)
+    for user in users:
+        tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
+            'teams': 'WIP', 'leadership': 'WIP'}
+        userStats.append(tempDict)
+    return userStats
 #    commitList = data.get('commits')
 #    arglist = []
 #    for i in commitList:
@@ -15,26 +25,50 @@ def analyzeData(data):
 #    searchWords(arglist)
 
 def calcContribution(data):
+    total_score = 0
     commits = data.get('commits')
-    users = data.get('users')
     comments = data.get('comments')
-    if(users == "-1"):
-        print("We could not complete user list")
-        return;
+    #print(users)
     for user in users:
         #print(user)
         contDict[user] = 0
+        commitCount[user] = 0
+        userLangs[user] = []
     contDict['Private User'] = 0
+    commitCount['Private User'] = 0
+    userLangs['Private User'] = []
     for comm in commits:
+        #print(comm)
         userLogin = comm[0]
-        print(userLogin)
-        score = (comm[3] / 6)
+        filenames = comm[4]
+        if comm[3] > 9:
+            for f in filenames:
+                #print(f)
+                if(f != 'X'):
+                    extension = f.split('.')
+                    if extension[1] == 'py':
+                        if 'Python' not in userLangs[userLogin]:
+                            userLangs[userLogin].append('Python')
+                    elif extension[1] == 'js':
+                        if 'JavaScript' not in userLangs[userLogin]:
+                            userLangs[userLogin].append('JavaScript')
+                    elif extension[1] == 'html':
+                        if 'HTML' not in userLangs[userLogin]:
+                            userLangs[userLogin].append('HTML')
+        #print(userLogin)
+        score = (comm[3] / float(6))
+        total_score += score
         existingScore = contDict.setdefault(userLogin, 0)
         contDict[userLogin] = existingScore + score
-    for user in contDict:
-        print(user)
-        print(str(contDict.get(user)))
-        print(" ")
+        commitCount[userLogin] = commitCount.get(userLogin) + 1
+    #print('hit it')
+    for user in users:
+        temp = contDict[user]
+        cont_percent = temp/float(total_score)
+        #print(user)
+        #print(cont_percent)
+        contDict[user] = cont_percent
+    return 1;
     #Create dictionary
     #add each user and a list of ints (per) to the dictionary
     #go through all commits, add to the appropriate list
