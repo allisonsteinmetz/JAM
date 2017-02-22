@@ -75,9 +75,10 @@ def select():
     else:
         data = getProjectData(authToken, name)
     # store data(pre-analyzed data) to database
+    storePreAnalysisData(name, data)
     data = analyzeData(data)
     # store analayzed data to database
-    return json.dumps("Project data has been found and analayzed!")
+    return json.dumps(data)
 
 @app.route('/users')
 def users():
