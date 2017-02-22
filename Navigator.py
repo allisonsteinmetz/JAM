@@ -56,10 +56,24 @@ def search():
         results = getProjects(authToken, searchKey)
     return json.dumps(results)
 
-@app.route('/projectUsers/<projname>')
-def showUsers(info):
+@app.route('/select', methods=['POST'])
+def select():
+    name = request.form['name']
+    print(name)
+    searchType = request.form['searchType']
+    if (searchType == "organizations"):
+        data = getOrganizationData(authToken, name)
+    else:
+        data = getProjectData(authToken, name)
+    # store data(pre-analyzed data) to database
+    data = analyzeData(data)
+    # store analayzed data to database
+    return json.dumps("Project data has been found and analayzed!")
+
+@app.route('/users')
+def users():
     #MAY NEED FUNCTIONALITY FOR IF SOMEONE USING THE PROGRAM CLICKS ON A USER
-    return render_template('user_table.html')
+    return render_template('users.html')
     #show the user page
 
 @app.route('/userinfo/<username>')
