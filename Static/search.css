@@ -26,3 +26,9 @@ td{
     color: inherit;
     transition: all .5s;
 }
+
+#icon{
+  width: 40px;
+  length: 40px;
+  margin: 15px;
+}

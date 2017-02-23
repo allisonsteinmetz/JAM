@@ -1,0 +1,3 @@
+function loadHome(){
+  window.location = "/";
+}

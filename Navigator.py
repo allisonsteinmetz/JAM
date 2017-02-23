@@ -14,11 +14,11 @@ import time
 now = time.strftime("%c")
 #print "Current date & time " + time.strftime("%c")
 
+
 app = Flask(__name__)
 authToken = 'empty token'
 
 @app.route('/')
-
 def homepage():
     if authToken == 'empty token':
         return redirect(url_for('login'))
@@ -71,7 +71,7 @@ def select():
     else:
         data = getProjectData(authToken, name)
     # store data(pre-analyzed data) to database
-    storePreAnalysisData(name, data)
+    #storePreAnalysisData(name, data)
     data = analyzeData(data)
     # store analayzed data to database
     return json.dumps(data)
