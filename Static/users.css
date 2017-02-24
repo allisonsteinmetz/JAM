@@ -4,6 +4,9 @@
   margin-top: 15px;
   margin-left: 30px;
 }
+#pageTitle{
+  color: white;
+}
 .navbar.navbar-default{
   background: #15566F;
 }
