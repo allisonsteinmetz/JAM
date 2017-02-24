@@ -7,6 +7,7 @@ if __name__ == '__main__':
     password = 'demopw123'  #read password
     projname = 'torvalds/linux'
     projname = 'allisonsteinmetz/JAM'
+    #projname = 'jpaugh/agithub'
     authToken = authenticate(username, password)
     projData = getProjectData(authToken, projname)
     data = analyzeData(projData)

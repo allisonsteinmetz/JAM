@@ -63,10 +63,11 @@ def calcContribution(data):
         existingScore = contDict.setdefault(userLogin, 0)
         contDict[userLogin] = existingScore + score
         commitCount[userLogin] = commitCount.get(userLogin) + 1
+        non_private_total_score = total_score - contDict['Private User']
     #print('hit it')
     for user in users:
         temp = contDict[user]
-        cont_percent = temp/float(total_score)
+        cont_percent = temp/float(non_private_total_score)
         #print(user)
         #print(cont_percent)
         contDict[user] = cont_percent
