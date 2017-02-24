@@ -72,7 +72,7 @@ def select():
     else:
         data = getProjectData(authToken, name)
     # store data(pre-analyzed data) to database
-    #storePreAnalysisData(name, data)
+    storePreAnalysisData(name, data)
     global userData
     userData = analyzeData(data)
     # store analayzed data to database
@@ -111,18 +111,37 @@ def success(data):
     return render_template('login_success.html', output=data) #calls the success.html page and feeds it the userlist as an argument
 
 def storePreAnalysisData(repoName, data):
-    print repoName;
-    print now;
-    mariadb_connection = mariadb.connect(user='root', database='teamData')
+    mariadb_connection = mariadb.connect(user='root', database='preAnalyzedDB')
     cursor = mariadb_connection.cursor()
-    sql = "INSERT INTO team (repositoryName, currentDate, teamInfo) VALUES (%s, %s, %s)"
+
+    query ="DELETE FROM preData WHERE repositoryName = %s"
+    cursor.execute(query, (repoName,))
+    mariadb_connection.commit()
+
+
+    sql = "INSERT INTO preData (repositoryName, currentDate, teamData) VALUES (%s, %s, %s)"
     cursor.execute(sql, (repoName, now, json.dumps(data)))
 
     mariadb_connection.commit()
     return None
 
-def storeAnalyzedData(data):
-    #store analyzed data to the correct spot in the database
+def storePostAnalysisData(repoName, data):
+    mariadb_connection = mariadb.connect(user='root', database='preAnalyzedDB')
+    cursor = mariadb_connection.cursor()
+
+    for user in data:
+        username = user.get('userLogin')
+        cont = user.get('contribution')
+        lang = user.get('languages')
+        langu = ''.join(lang)
+        team = user.get('teams')
+        teama= ''.join(team)
+        lead = user.get('leadership')
+
+        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership) VALUES (%s, %s, %f, %s, %s, %f)"
+        cursor.execute(sql, (repoName, username, cont, langu, teama, lead))
+        mariadb_connection.commit()
+
     return None
 
 def trainSystem(data):
