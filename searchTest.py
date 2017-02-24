@@ -4,7 +4,7 @@ from selenium.webdriver.common.keys import Keys
 real_user = 'juicearific'
 real_pass = 'demopw123'
 
-browser = webdriver.Chrome("/Users/allisonsteinmetz/Downloads/chromedriver")
+browser = webdriver.Chrome("/Users/patel/Desktop/chromedriver")
 
 browser.get('http://localhost:5000/')
 
