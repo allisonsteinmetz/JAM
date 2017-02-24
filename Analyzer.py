@@ -36,23 +36,25 @@ def calcContribution(data):
         userLangs[user] = []
     contDict['Private User'] = 0
     commitCount['Private User'] = 0
-    userLangs['Private User'] = []
+    contDict['web-flow'] = 0
+    commitCount['web-flow'] = 0
     for comm in commits:
         #print(comm)
         userLogin = comm[0]
         filenames = comm[4]
         if comm[3] > 9:
-            for f in filenames:
-                #print(f)
-                if(f != 'X'):
+            if (userLogin != 'Private User') and (userLogin != 'web-flow'):
+                for f in filenames:
+                    #print(f)
                     extension = f.split('.')
-                    if extension[1] == 'py':
+                    last = len(extension) - 1
+                    if extension[last] == 'py':
                         if 'Python' not in userLangs[userLogin]:
                             userLangs[userLogin].append('Python')
-                    elif extension[1] == 'js':
+                    elif extension[last] == 'js':
                         if 'JavaScript' not in userLangs[userLogin]:
                             userLangs[userLogin].append('JavaScript')
-                    elif extension[1] == 'html':
+                    elif extension[last] == 'html':
                         if 'HTML' not in userLangs[userLogin]:
                             userLangs[userLogin].append('HTML')
         #print(userLogin)

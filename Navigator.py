@@ -7,7 +7,7 @@ from Authenticator import authenticate
 from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
 from Analyzer import analyzeData, trainData
 from SearchController import getOrganizations, getProjects
-#import mysql.connector as mariadb
+import mysql.connector as mariadb
 import json
 import time
 

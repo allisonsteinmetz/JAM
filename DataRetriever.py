@@ -45,20 +45,23 @@ def getOrganizationData(g, name):
     return repoList
 
 def getUsers(owner, repo):    #get a list of all the users in a project. That means collaboratros and contributors, maybe also subscribers later.
+    strikeone = False
     status, data = token.repos[owner][repo].collaborators.get()
+    userlist = set()
     if status == 200:
-        userlist = set()
         for user in data:
             userlist.add(str(user.get('login')))
     else:
-        return "-1"
+        strikeone = True
     status, data = token.repos[owner][repo].contributors.get()
     if status == 200:
         for user in data:
             userlist.add(str(user.get('login')))
         return userlist
+    elif strikeone :
+        return -1
     else:
-        return "-1"
+        return userlist
 
 def getRepoLanguages(owner, repo):
     status, data = token.repos[owner][repo].languages.get()
@@ -83,7 +86,7 @@ def getCommits(owner, repo):
             lastpage = link[1].split('>')[1].split('=')[3]
         commits = []
         i = 0
-        while i < lastpage :
+        while i < int(lastpage) :
             #print (i)
             status, data = token.repos[owner][repo].commits.get(per_page='100', page=i)
             codes = []
