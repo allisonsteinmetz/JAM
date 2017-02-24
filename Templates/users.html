@@ -10,7 +10,40 @@
         <script src="static/users.js"></script>
     </head>
     <body>
-      <img src="/static/inin.png" id="icon" onclick="loadHome()">
-      <h1>This is the user's page</h1>
+      <div class="container">
+          <div class="row">
+              <nav class="navbar navbar-default">
+                  <div class="nav nav-justified navbar-nav">
+                      <form class="navbar-form navbar-search" id="form" role="form">
+                          <div class="input-group">
+                            <img src="/static/inin.png" id="icon" onclick="loadHome()">
+                            <h1 id="pageTitle">Project Users</h1>
+                          </div>
+                      </form>
+                  </div>
+              </nav>
+          </div>
+      </div>
+      <table id="userResults">
+        <tbody>
+          <tr>
+            <th>Username</th>
+            <th>Contribution</th>
+            <th>Leadership</th>
+            <th>Languages</th>
+            <th>Teams</th>
+          </tr>
+          {% for user in userData %}
+                <tr id="userRow">
+                    <td>{{ user['userLogin'] }}</td>
+                    <td class="contributionScore">{{ user['contribution'] }}</td>
+                    <td>{{ user['leadership'] }}</td>
+                    <td class="languages">{{ user['languages'] }}</td>
+                    <td>{{ user['teams'] }}</td>
+                </tr>
+            {% endfor %}
+            <script>fixFormatting();</script>
+        </tbody>
+    </table>
     </body>
 </hml>

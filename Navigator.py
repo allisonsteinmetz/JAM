@@ -7,7 +7,7 @@ from Authenticator import authenticate
 from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
 from Analyzer import analyzeData, trainData
 from SearchController import getOrganizations, getProjects
-import mysql.connector as mariadb
+#import mysql.connector as mariadb
 import json
 import time
 
@@ -17,6 +17,7 @@ now = time.strftime("%c")
 
 app = Flask(__name__)
 authToken = 'empty token'
+userData = 'No data'
 
 @app.route('/')
 def homepage():
@@ -72,14 +73,16 @@ def select():
         data = getProjectData(authToken, name)
     # store data(pre-analyzed data) to database
     #storePreAnalysisData(name, data)
-    data = analyzeData(data)
+    global userData
+    userData = analyzeData(data)
     # store analayzed data to database
-    return json.dumps(data)
+    #storePostAnalysisData(name, userData)
+    return json.dumps(userData)
 
 @app.route('/users')
 def users():
     #MAY NEED FUNCTIONALITY FOR IF SOMEONE USING THE PROGRAM CLICKS ON A USER
-    return render_template('users.html')
+    return render_template('users.html', userData = userData)
     #show the user page
 
 @app.route('/userinfo/<username>')
@@ -106,20 +109,6 @@ def showContribution(name):
 @app.route('/success/<data>')
 def success(data):
     return render_template('login_success.html', output=data) #calls the success.html page and feeds it the userlist as an argument
-
-#another call from POST of showSearch - this is when a project is selected. The name and type should be known to pass as arguments.
-def select(name, searchType):
-    if (searchType == "organizations"):
-        data = getOrgData(name)
-        #store pre-analysis data to database
-        analyzedData = analyzeOrg(data)
-    else :
-        data = getProjectData(name)
-        #store pre-analysis data to database
-        analyzedData = analyzeProject(data)
-        #Login, leadership score, contribution score, teams, skills
-    #store analyzed data to database
-    return analyzedData
 
 def storePreAnalysisData(repoName, data):
     print repoName;
