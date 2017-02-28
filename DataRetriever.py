@@ -25,7 +25,7 @@ def getProjectData(g, name):
     commentList = getComments(owner, repo)
     global passed
     passed = True
-    returnData = {'users': list(userList), 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList}
+    returnData = {'users': list(userList), 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList, 'merge': 'WIT'}
 #    projectData = {name: returnData}
 #    if db.rawData.find({name:{'$exists': 1}}):
 #        db.rawData.insert_one(projectData)
