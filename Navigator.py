@@ -72,7 +72,7 @@ def select():
     else:
         data = getProjectData(authToken, name)
     # store data(pre-analyzed data) to database
-    storePreAnalysisData(name, data)
+    #storePreAnalysisData(name, data)
     global userData
     userData = analyzeData(data)
     # store analayzed data to database
@@ -114,15 +114,20 @@ def storePreAnalysisData(repoName, data):
     mariadb_connection = mariadb.connect(user='root', database='preAnalyzedDB')
     cursor = mariadb_connection.cursor()
 
-    query ="DELETE FROM preData WHERE repositoryName = %s"
-    cursor.execute(query, (repoName,))
-    mariadb_connection.commit()
+    for user in data:
+        username = user.get('users')
+        users = ''.join(username)
+        language = user.get('repoLanguages')
+        commit = user.get('commits')
+        comment = user.get('comments')
+        merge = user.get('merges')
+        query ="DELETE FROM preData WHERE repositoryName = %s"
+        cursor.execute(query, (repoName,))
+        mariadb_connection.commit()
+        sql = "INSERT INTO preData (repositoryName, userName, currentDate, commits, comments, merges) VALUES (%s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, (repoName, users, now, commit, comment, merge))
+        mariadb_connection.commit()
 
-
-    sql = "INSERT INTO preData (repositoryName, currentDate, teamData) VALUES (%s, %s, %s)"
-    cursor.execute(sql, (repoName, now, json.dumps(data)))
-
-    mariadb_connection.commit()
     return None
 
 def storePostAnalysisData(repoName, data):
@@ -137,8 +142,10 @@ def storePostAnalysisData(repoName, data):
         team = user.get('teams')
         teama= ''.join(team)
         lead = user.get('leadership')
-
-        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership) VALUES (%s, %s, %f, %s, %s, %f)"
+        query ="DELETE FROM preData WHERE repositoryName = %s AND userName = %s"
+        cursor.execute(query, (repoName, username))
+        mariadb_connection.commit()
+        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership) VALUES (%s, %s, %s, %s, %s, %s)"
         cursor.execute(sql, (repoName, username, cont, langu, teama, lead))
         mariadb_connection.commit()
 
