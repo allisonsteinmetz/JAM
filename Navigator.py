@@ -7,11 +7,11 @@ from Authenticator import authenticate
 from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
 from Analyzer import analyzeData, trainData
 from SearchController import getOrganizations, getProjects
-import mysql.connector as mariadb
-import json
-import time
+# import mysql.connector as mariadb
+# import json
+# import time
 
-now = time.strftime("%c")
+# now = time.strftime("%c")
 #print "Current date & time " + time.strftime("%c")
 
 
@@ -72,11 +72,11 @@ def select():
     else:
         data = getProjectData(authToken, name)
     # store data(pre-analyzed data) to database
-    storePreAnalysisData(name, data)
+    #storePreAnalysisData(name, data)
     global userData
-    userData = analyzeData(data)
+    userData = analyzeData(name, data)
     # store analayzed data to database
-    storePostAnalysisData(name, userData)
+    #storePostAnalysisData(name, userData)
     return json.dumps(userData)
 
 @app.route('/users')
@@ -110,48 +110,48 @@ def showContribution(name):
 def success(data):
     return render_template('login_success.html', output=data) #calls the success.html page and feeds it the userlist as an argument
 
-def storePreAnalysisData(repoName, data):
-    mariadb_connection = mariadb.connect(user='root', password='l&a731', database='preAnalyzedDB')
-    cursor = mariadb_connection.cursor()
-
-    username = data.get('users')
-    language = data.get('repoLanguages')
-    commit = data.get('commits')
-    comment = data.get('comments')
-    merge = data.get('merges')
-    print(merge)
-    print(comment)
-    print(commit)
-    print(language)
-    print(username)
-    query ="DELETE FROM preData WHERE repositoryName = %s"
-    cursor.execute(query, (repoName,))
-    mariadb_connection.commit()
-    sql = "INSERT INTO preData (repositoryName, userName, currentDate, commits, comments, merges, languages) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    cursor.execute(sql, (repoName, str(username), now, str(commit), str(comment), str(merge), str(language)))
-    mariadb_connection.commit()
-
-    return None
-
-def storePostAnalysisData(repoName, data):
-    mariadb_connection = mariadb.connect(user='root', password='l&a731', database='postAnalyzedDB')
-    cursor = mariadb_connection.cursor()
-
-    for user in data:
-        username = user.get('userLogin')
-        cont = user.get('contribution')
-        lang = user.get('languages')
-        langu = ''.join(lang)
-        team = user.get('teams')
-        teama= ''.join(team)
-        lead = user.get('leadership')
-        query ="DELETE FROM postData WHERE repositoryName = %s AND userName = %s"
-        cursor.execute(query, (repoName, username))
-        mariadb_connection.commit()
-        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership) VALUES (%s, %s, %s, %s, %s, %s)"
-        cursor.execute(sql, (repoName, username, cont, langu, teama, lead))
-        mariadb_connection.commit()
-    return None
+# def storePreAnalysisData(repoName, data):
+#     mariadb_connection = mariadb.connect(user='root', password='l&a731', database='preAnalyzedDB')
+#     cursor = mariadb_connection.cursor()
+#
+#     username = data.get('users')
+#     language = data.get('repoLanguages')
+#     commit = data.get('commits')
+#     comment = data.get('comments')
+#     merge = data.get('merges')
+#     print(merge)
+#     print(comment)
+#     print(commit)
+#     print(language)
+#     print(username)
+#     query ="DELETE FROM preData WHERE repositoryName = %s"
+#     cursor.execute(query, (repoName,))
+#     mariadb_connection.commit()
+#     sql = "INSERT INTO preData (repositoryName, userName, currentDate, commits, comments, merges, languages) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+#     cursor.execute(sql, (repoName, str(username), now, str(commit), str(comment), str(merge), str(language)))
+#     mariadb_connection.commit()
+#
+#     return None
+#
+# def storePostAnalysisData(repoName, data):
+#     mariadb_connection = mariadb.connect(user='root', password='l&a731', database='postAnalyzedDB')
+#     cursor = mariadb_connection.cursor()
+#
+#     for user in data:
+#         username = user.get('userLogin')
+#         cont = user.get('contribution')
+#         lang = user.get('languages')
+#         langu = ''.join(lang)
+#         team = user.get('teams')
+#         teama= ''.join(team)
+#         lead = user.get('leadership')
+#         query ="DELETE FROM postData WHERE repositoryName = %s AND userName = %s"
+#         cursor.execute(query, (repoName, username))
+#         mariadb_connection.commit()
+#         sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership) VALUES (%s, %s, %s, %s, %s, %s)"
+#         cursor.execute(sql, (repoName, username, cont, langu, teama, lead))
+#         mariadb_connection.commit()
+#     return None
 
 def trainSystem(data):
     #contact the analyzer for training

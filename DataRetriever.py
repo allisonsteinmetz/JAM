@@ -3,11 +3,11 @@
 from agithub.GitHub import GitHub
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
-#from pymongo import MongoClient
+import mysql.connector as mariadb
+import json
+import time
 
-#client = MongoClient('localhost', 27017)
-#db = client.test_database
-#result = db.rawData.delete_many({})
+now = time.strftime("%c")
 
 token = 'nothing yet'
 passed = False
@@ -25,23 +25,20 @@ def getProjectData(g, name):
     commentList = getComments(owner, repo)
     global passed
     passed = True
-    returnData = {'users': list(userList), 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList, 'merge': 'WIT'}
-#    projectData = {name: returnData}
-#    if db.rawData.find({name:{'$exists': 1}}):
-#        db.rawData.insert_one(projectData)
-#    else:
-#        db.rawData.replace_one({'name':name}, projectData)
-#    cursor = db.rawData.find({name:{'$exists': 1}})
-#    for document in cursor:
-#        print(document)
+    returnData = {'users': list(userList), 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList, 'merge': 'WIP'}
+    storePreAnalysisData(name, returnData)
     return returnData
 
 def getOrganizationData(g, name):
     global token
     token = g
     repoList = getRepositories(name)
+    returnData = []
     for repo in repoList:
         dataPost = getProjectData(token, repo)
+        returnData.append(dataPost)
+    # do we want to store organization data differently???
+    #storePreAnalysisData(name, returnData)
     return repoList
 
 def getUsers(owner, repo):    #get a list of all the users in a project. That means collaboratros and contributors, maybe also subscribers later.
@@ -137,3 +134,26 @@ def getRepositories(org):
         return repos
     else:
         return "Could not retrieve organization's repositories"
+
+def storePreAnalysisData(repoName, data):
+    mariadb_connection = mariadb.connect(user='root', password='l&a731', database='preAnalyzedDB')
+    cursor = mariadb_connection.cursor()
+
+    username = data.get('users')
+    language = data.get('repoLanguages')
+    commit = data.get('commits')
+    comment = data.get('comments')
+    merge = data.get('merges')
+    print(merge)
+    print(comment)
+    print(commit)
+    print(language)
+    print(username)
+    query ="DELETE FROM preData WHERE repositoryName = %s"
+    cursor.execute(query, (repoName,))
+    mariadb_connection.commit()
+    sql = "INSERT INTO preData (repositoryName, userName, currentDate, commits, comments, merges, languages) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    cursor.execute(sql, (repoName, str(username), now, str(commit), str(comment), str(merge), str(language)))
+    mariadb_connection.commit()
+
+    return None

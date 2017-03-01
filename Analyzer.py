@@ -2,13 +2,18 @@ from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
 #from sklearn.feature_extraction import DictVectorizer
 #from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+import mysql.connector as mariadb
+import json
+import time
+
+now = time.strftime("%c")
 
 default = 0
 contDict = {}
 commitCount = {}
 userLangs = {}
 global users
-def analyzeData(data):
+def analyzeData(name, data):
     userStats = []
     global users
     users = data.get('users')
@@ -17,6 +22,7 @@ def analyzeData(data):
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': 'WIP', 'leadership': 'WIP'}
         userStats.append(tempDict)
+    storePostAnalysisData(repoName, userStats)
     return userStats
 #    commitList = data.get('commits')
 #    arglist = []
@@ -116,3 +122,23 @@ def trainData(data):
         return true
     else:
         return false
+
+def storePostAnalysisData(repoName, data):
+    mariadb_connection = mariadb.connect(user='root', password='l&a731', database='postAnalyzedDB')
+    cursor = mariadb_connection.cursor()
+
+    for user in data:
+        username = user.get('userLogin')
+        cont = user.get('contribution')
+        lang = user.get('languages')
+        langu = ''.join(lang)
+        team = user.get('teams')
+        teama= ''.join(team)
+        lead = user.get('leadership')
+        query ="DELETE FROM postData WHERE repositoryName = %s AND userName = %s"
+        cursor.execute(query, (repoName, username))
+        mariadb_connection.commit()
+        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership) VALUES (%s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, (repoName, username, cont, langu, teama, lead))
+        mariadb_connection.commit()
+    return None
