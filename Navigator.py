@@ -17,7 +17,7 @@ from SearchController import getOrganizations, getProjects
 
 app = Flask(__name__)
 authToken = 'empty token'
-userData = 'No data'
+usersData = 'No data'
 
 @app.route('/')
 def homepage():
@@ -73,22 +73,19 @@ def select():
         data = getProjectData(authToken, name)
     # store data(pre-analyzed data) to database
     #storePreAnalysisData(name, data)
-    global userData
-    userData = analyzeData(name, data)
+    global usersData
+    usersData = analyzeData(name, data)
     # store analayzed data to database
     #storePostAnalysisData(name, userData)
-    return json.dumps(userData)
+    return json.dumps(usersData)
 
 @app.route('/users')
 def users():
-    #MAY NEED FUNCTIONALITY FOR IF SOMEONE USING THE PROGRAM CLICKS ON A USER
-    return render_template('users.html', userData = userData)
-    #show the user page
+    return render_template('usersList.html', usersData = usersData)
 
 @app.route('/userinfo/<username>')
-def showUserInfo(name):
-    return render_template('user_information.html')
-    #show a specific user's statis
+def showUserInfo(username):
+    return render_template('user.html', name=username)
 
 @app.route('/teaminfo/<projname>/<teamnumber>')
 def showTeam(number):

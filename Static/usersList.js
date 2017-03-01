@@ -14,3 +14,11 @@ function fixFormatting()
     userLangs.innerHTML = langs.replace(/'|'/gi, '').replace('[', '').replace(']', '');
   }
 }
+function getUser(row)
+{
+  console.log(row);
+  cell = row.cells;
+  name = cell[0].innerHTML;
+  console.log(name);
+  window.location = "/userinfo/" + name;
+}
