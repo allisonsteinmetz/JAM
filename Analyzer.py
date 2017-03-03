@@ -22,7 +22,7 @@ def analyzeData(name, data):
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': 'WIP', 'leadership': 'WIP'}
         userStats.append(tempDict)
-    storePostAnalysisData(repoName, userStats)
+    storePostAnalysisData(name, userStats)
     return userStats
 #    commitList = data.get('commits')
 #    arglist = []
