@@ -18,6 +18,7 @@ from SearchController import getOrganizations, getProjects
 app = Flask(__name__)
 authToken = 'empty token'
 usersData = 'No data'
+name = 'No Project Name'
 
 @app.route('/')
 def homepage():
@@ -64,6 +65,7 @@ def search():
 
 @app.route('/select', methods=['POST'])
 def select():
+    global name
     name = request.form['name']
     print(name)
     searchType = request.form['searchType']
@@ -78,7 +80,7 @@ def select():
 
 @app.route('/users')
 def users():
-    return render_template('usersList.html', usersData = usersData)
+    return render_template('usersList.html', projectName = name,usersData = usersData)
 
 @app.route('/userinfo/<username>')
 def showUserInfo(username):
