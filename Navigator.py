@@ -71,12 +71,9 @@ def select():
         data = getOrganizationData(authToken, name)
     else:
         data = getProjectData(authToken, name)
-    # store data(pre-analyzed data) to database
-    #storePreAnalysisData(name, data)
+
     global usersData
     usersData = analyzeData(name, data)
-    # store analayzed data to database
-    #storePostAnalysisData(name, userData)
     return json.dumps(usersData)
 
 @app.route('/users')

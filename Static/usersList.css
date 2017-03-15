@@ -1,14 +1,24 @@
 #icon{
-  width: 40px;
-  length: 40px;
-  margin-top: 15px;
-  margin-left: 30px;
+  width: 12%;
+  length: 10%;
 }
 #pageTitle{
   color: white;
+  text-align: center;
+}
+body {
+    background: #C98180;
+}
+li {
+    display: inline;
+    float: left;
+}
+.container{
+  margin-top: 1%;
 }
 .navbar.navbar-default{
-  background: #15566F;
+  background-color: rgba(50, 50, 50, 0.5);
+  border-color: black;
 }
 table{
   width: 80%;
@@ -19,7 +29,7 @@ tr {
     border-bottom: 1px solid #ddd;
     height: 70px;
 }
-#userRow:hover {background-color: #f5f5f5}
+#userRow:hover {background-color: #A96363}
 td{
   padding: 20px;
   font-size: 16px;

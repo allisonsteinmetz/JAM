@@ -26,7 +26,7 @@ def getProjectData(g, name):
     global passed
     passed = True
     returnData = {'users': list(userList), 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList, 'merge': 'WIP'}
-    storePreAnalysisData(name, returnData)
+    # storePreAnalysisData(name, returnData)
     return returnData
 
 def getOrganizationData(g, name):
@@ -38,7 +38,7 @@ def getOrganizationData(g, name):
         dataPost = getProjectData(token, repo)
         returnData.append(dataPost)
     # do we want to store organization data differently???
-    #storePreAnalysisData(name, returnData)
+    storePreAnalysisData(name, returnData)
     return repoList
 
 def getUsers(owner, repo):    #get a list of all the users in a project. That means collaboratros and contributors, maybe also subscribers later.
