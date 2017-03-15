@@ -15,7 +15,7 @@
             <div class="row">
                 <nav class="navbar navbar-default">
                     <div class="nav nav-justified navbar-nav">
-                        <form class="navbar-form navbar-search" id="searchForm" role="form">
+                        <form class="navbar-form navbar-search" id="searchForm" role="form" onsubmit="return search();">
                             <div class="input-group">
 
                                 <div class="input-group-btn">
@@ -28,7 +28,7 @@
                                 <input type="text" name="searchKey" class="form-control">
 
                                 <div class="input-group-btn">
-                                    <button id="searchButton" type="button" class="btn btn-search btn-default">
+                                    <button id="searchButton" type="button" class="btn btn-search btn-default" onclick="return search();">
                                         GO
                                     </button>
                                 </div>
