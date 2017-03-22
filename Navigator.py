@@ -80,11 +80,12 @@ def select():
 
 @app.route('/users')
 def users():
+    print(usersData)
     return render_template('usersList.html', projectName = name,usersData = usersData)
 
-@app.route('/userinfo/<username>')
-def showUserInfo(username):
-    return render_template('user.html', name=username)
+@app.route('/userinfo/<username>/<index>')
+def showUserInfo(username, index):
+    return render_template('user.html', name=username, userData = usersData[int(index) - 1])
 
 @app.route('/teaminfo/<projname>/<teamnumber>')
 def showTeam(number):

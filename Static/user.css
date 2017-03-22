@@ -1,0 +1,26 @@
+#userInfoDiv{
+  margin-left: 10%;
+  margin-right: 10%;
+  border-radius: 10px;
+  background: #D3D3D3;
+  padding: 1%;
+}
+#username{
+  color: white;
+  margin-left: 5%;
+}
+#infoTitle{
+  text-align: center;
+}
+#infoDiv{
+  border-radius: 10px;
+  border: solid;
+  border-color: #a9a9a9;
+  border-width: 1px;
+  margin-left: 1%;
+  margin-right: 1%;
+  padding: 1%;
+}
+.column-left{ float: left; width: 33%; }
+.column-right{ float: right; width: 33%; }
+.column-center{ display: inline-block; width: 33%; }

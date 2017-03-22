@@ -16,9 +16,8 @@ function fixFormatting()
 }
 function getUser(row)
 {
-  console.log(row);
   cell = row.cells;
   name = cell[0].innerHTML;
   console.log(name);
-  window.location = "/userinfo/" + name;
+  window.location = "/userinfo/" + name +"/"+row.rowIndex;
 }
