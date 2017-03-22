@@ -1,5 +1,3 @@
-#import pymongo
-
 from agithub.GitHub import GitHub
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
@@ -99,7 +97,9 @@ def getCommits(owner, repo):
                     for f in commit.get('files') :
                         filenames.append(f.get('filename'))
                     commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message').encode('utf-8'),
-                        commit.get('stats').get('total'), filenames)
+                        commit.get('stats').get('total'), 'main', filenames)
+#dict[0] = username; dict[1] = commit date; dict[2] = message w/ commit; dict[3] = total lines of code changed;
+#dict[4] = branch name; dict[5] = list of files changed
                     #print(commitData)
                     commits.append(commitData)
                 else:
@@ -107,6 +107,12 @@ def getCommits(owner, repo):
                     commitData = ('Private User', 'Filler_Date', 'Filler_Msg', commit.get('stats').get('total'), 'X')
                     commits.append(commitData)
             i = i + 1
+
+        status, data = token.repos[owner][repo].branches.get(per_page=100)
+        for branch in data:
+            print(branch.get('name'))
+            status, data = token.repos[owner][repo].branches[branch].get(per_page=100)
+            print(status)
         return commits
     else:
         return "Could not retrieve commits"

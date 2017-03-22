@@ -5,14 +5,16 @@ from Analyzer import analyzeData, trainData
 if __name__ == '__main__':
     username = 'juicearific' #read username
     password = 'demopw123'  #read password
-    projname = 'torvalds/linux'
-    projname = 'allisonsteinmetz/JAM'
-    #projname = 'jpaugh/agithub'
+    #projname = 'torvalds/linux'
+    #projname = 'allisonsteinmetz/JAM'
+    projname = 'jpaugh/agithub'
     authToken = authenticate(username, password)
     projData = getProjectData(authToken, projname)
-    data = analyzeData(projData)
+    data = analyzeData('dummyname', projData)
     for user in data:
         print(user.get('userLogin'))
         print(user.get('contribution'))
-        for lang in user.get('languages'):
-            print(lang)
+        print(user.get('uniqueStats').get('commitCount'))
+        print(user.get('uniqueStats').get('codeLines'))
+        #for lang in user.get('languages'):
+        #    print(lang)

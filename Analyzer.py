@@ -1,3 +1,8 @@
+# lines of code accepted
+# commits accepted
+# major contribution branches
+# # of comments
+
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
 #from sklearn.feature_extraction import DictVectorizer
@@ -12,6 +17,7 @@ default = 0
 contDict = {}
 commitCount = {}
 userLangs = {}
+statsDict = {}
 global users
 def analyzeData(name, data):
     userStats = []
@@ -20,7 +26,7 @@ def analyzeData(name, data):
     calcContribution(data)
     for user in users:
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
-            'teams': 'WIP', 'leadership': 'WIP'}
+            'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' : statsDict.get(user)}
         userStats.append(tempDict)
     storePostAnalysisData(name, userStats)
     return userStats
@@ -38,18 +44,20 @@ def calcContribution(data):
     for user in users:
         #print(user)
         contDict[user] = 0
-        commitCount[user] = 0
         userLangs[user] = []
-    contDict['Private User'] = 0
-    commitCount['Private User'] = 0
-    contDict['web-flow'] = 0
-    commitCount['web-flow'] = 0
+        branches = []
+        statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches}
+    #contDict['Private User'] = 0
+    #statsDict['Private User'] =
+
+    #contDict['web-flow'] = 0
+    #commitCount['web-flow'] = 0
     for comm in commits:
         #print(comm)
         userLogin = comm[0]
-        filenames = comm[4]
-        if comm[3] > 9:
-            if (userLogin != 'Private User') and (userLogin != 'web-flow'):
+        if (userLogin != 'Private User') and (userLogin != 'web-flow'):
+            filenames = comm[5]
+            if comm[3] > 9:
                 for f in filenames:
                     #print(f)
                     extension = f.split('.')
@@ -63,13 +71,14 @@ def calcContribution(data):
                     elif extension[last] == 'html':
                         if 'HTML' not in userLangs[userLogin]:
                             userLangs[userLogin].append('HTML')
-        #print(userLogin)
-        score = (comm[3] / float(6))
-        total_score += score
-        existingScore = contDict.setdefault(userLogin, 0)
-        contDict[userLogin] = existingScore + score
-        commitCount[userLogin] = commitCount.get(userLogin) + 1
-        non_private_total_score = total_score - contDict['Private User']
+            #print(userLogin)
+            score = (comm[3] / float(6))
+            total_score += score
+            existingScore = contDict.setdefault(userLogin, 0)
+            contDict[userLogin] = existingScore + score
+            statsDict[userLogin]['commitCount'] += 1
+            statsDict[userLogin]['codeLines'] += comm[3]
+            non_private_total_score = total_score
     #print('hit it')
     for user in users:
         temp = contDict[user]
