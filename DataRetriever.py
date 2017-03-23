@@ -69,50 +69,65 @@ def getRepoLanguages(owner, repo):
         return "Could not retrieve languages"
 
 def getCommits(owner, repo):
-    status, data = token.repos[owner][repo].commits.get(per_page='100')
-    if status == 200:
-        lastpage = 1
-        commitHeader = token.getheaders()
+    branches = []   #create a location to store all branches
+    status, data = token.repos[owner][repo].branches.get(per_page=100)  #grab list of all branches
+    if status == 200 :    #check to see if the data pulled successfully
+        #determine if there are more than one page of results
+        lastpage = '1'
+        branchHeader = token.getheaders()
         link = 'NULL'
-        for element in commitHeader:
+        for element in branchHeader:
             if 'link' in element:
                 link = element
+        #if there is more than one page of results:
         if link != 'NULL' :
-            lastpage = link[1].split('>')[1].split('=')[3]
-        commits = []
-        i = 0
-        while i < int(lastpage) :
-            #print (i)
-            status, data = token.repos[owner][repo].commits.get(per_page='100', page=i)
-            codes = []
-            for comm in data:
-                codes.append(comm.get('sha'))
-            for sha in codes:
-                status, commit = token.repos[owner][repo].commits[sha].get()
-                if (commit.get('committer') != None):
-                    #print(commit.get('committer').get('login'))
-                    #print(commit.get('commit').get('committer').get('date'))
-                    #print(commit.get('commit').get('message').encode('utf-8'))
-                    filenames = []
-                    for f in commit.get('files') :
-                        filenames.append(f.get('filename'))
-                    commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message').encode('utf-8'),
-                        commit.get('stats').get('total'), 'main', filenames)
-#dict[0] = username; dict[1] = commit date; dict[2] = message w/ commit; dict[3] = total lines of code changed;
-#dict[4] = branch name; dict[5] = list of files changed
-                    #print(commitData)
-                    commits.append(commitData)
-                else:
-                    #print("Private User")
-                    commitData = ('Private User', 'Filler_Date', 'Filler_Msg', commit.get('stats').get('total'), 'X')
-                    commits.append(commitData)
-            i = i + 1
-
-        status, data = token.repos[owner][repo].branches.get(per_page=100)
+            lastpage = link[1].split('>')[1].split('=')[3]  #grab the last page num
+            i = 0
+            for branch in data :
+                branches.append(branch.get('name')) #append the first page into the array
+            while i < int(lastpage) :
+                status, data = token.repos[owner][repo].branches.get(per_page='100', page=i)
+                if status == 200 :
+                    for branch in data :
+                        branches.append(branch.get('name')) #append the branches from each page into the array
+        #for every branch in the repository:
         for branch in data:
-            print(branch.get('name'))
-            status, data = token.repos[owner][repo].branches[branch].get(per_page=100)
-            print(status)
+            branchName = branch.get('name')
+            print(branchName)
+            status, data = token.repos[owner][repo].commits.get(sha=branchName, per_page=100)   #grab all the commits.
+            if status == 200:
+                lastpage = '1'
+                commitHeader = token.getheaders()
+                link = 'NULL'
+                for element in commitHeader:
+                    if 'link' in element:
+                        link = element
+                if link != 'NULL' :
+                    lastpage = link[1].split('>')[1].split('=')[4]
+                commits = []
+                i = 0
+                while i < int(lastpage) :
+                    print (i)
+                    status, data = token.repos[owner][repo].commits.get(sha=branchName, per_page='100', page=i)
+                    codes = []
+                    for comm in data:
+                        codes.append(comm.get('sha'))
+                    for sha in codes:
+                        status, commit = token.repos[owner][repo].commits[sha].get()
+                        if (commit.get('committer') != None):
+                            #print(commit.get('committer').get('login'))
+                            #print(commit.get('commit').get('committer').get('date'))
+                            #print(commit.get('commit').get('message').encode('utf-8'))
+                            filenames = []
+                            for f in commit.get('files') :
+                                filenames.append(f.get('filename'))
+                            commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message').encode('utf-8'),
+                                commit.get('stats').get('total'), 'main', filenames)
+    #dict[0] = username; dict[1] = commit date; dict[2] = message w/ commit; dict[3] = total lines of code changed;
+    #dict[4] = branch name; dict[5] = list of files changed
+                        #print(commitData)
+                        commits.append(commitData)
+                    i = i + 1
         return commits
     else:
         return "Could not retrieve commits"
