@@ -10,36 +10,40 @@
         <script src="static/usersList.js"></script>
     </head>
     <body>
-      <div class="container">
-          <div class="row">
-              <nav class="navbar navbar-default">
-                  <div class="nav nav-justified navbar-nav">
-                      <img id="icon" src="/static/genesyslogo.png"/>
-                      <h2 id="pageTitle">{{ projectName }}</h2>
-                  </div>
-              </nav>
-          </div>
-      </div>
-      <table id="userResults">
-        <tbody>
-          <tr>
-            <th>Username</th>
-            <th>Contribution</th>
-            <th>Leadership</th>
-            <th>Languages</th>
-            <th>Teams</th>
-          </tr>
-          {% for user in usersData %}
-                <tr id="userRow" onclick="getUser(this)">
-                    <td>{{ user['userLogin'] }}</td>
-                    <td class="contributionScore">{{ user['contribution'] }}</td>
-                    <td>{{ user['leadership'] }}</td>
-                    <td class="languages">{{ user['languages'] }}</td>
-                    <td>{{ user['teams'] }}</td>
+        <div class="container">
+            <div class="row">
+                <nav class="navbar navbar-default">
+                    <div class="nav nav-justified navbar-nav">
+                        <img id="icon" src="/static/genesyslogo.png"/>
+                        <div id="titleDiv">
+                            <h2 id="pageTitle">{{ projectName }}</h2>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <table id="userResults">
+            <tbody>
+                <tr>
+                    <th>Username</th>
+                    <th>Contribution</th>
+                    <th>Leadership</th>
+                    <th>Languages</th>
+                    <th>Teams</th>
                 </tr>
-            {% endfor %}
-            <script>fixFormatting();</script>
-        </tbody>
-    </table>
+                {% for user in usersData %}
+                    <tr id="userRow" onclick="getUser(this)">
+                        <td>{{ user['userLogin'] }}</td>
+                        <td class="contributionScore">{{ user['contribution'] }}</td>
+                        <td>{{ user['leadership'] }}</td>
+                        <td class="languages">{{ user['languages'] }}</td>
+                        <td>{{ user['teams'] }}</td>
+                    </tr>
+                {% endfor %}
+                <script>
+                    fixFormatting();
+                </script>
+            </tbody>
+        </table>
     </body>
 </hml>

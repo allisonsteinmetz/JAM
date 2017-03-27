@@ -1,10 +1,14 @@
 #icon{
   width: 12%;
-  length: 10%;
+  margin-left: 1%;
+}
+#titleDiv{
+  display: inline-block;
+  width: 72%;
 }
 #pageTitle{
   color: white;
-  margin-left: 5%;
+  text-align: center;
 }
 li {
     display: inline;
