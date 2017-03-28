@@ -45,13 +45,9 @@ def calcContribution(data):
         #print(user)
         contDict[user] = 0
         userLangs[user] = []
-        branches = []
+        branches = {}
+        bCount = []
         statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches}
-    #contDict['Private User'] = 0
-    #statsDict['Private User'] =
-
-    #contDict['web-flow'] = 0
-    #commitCount['web-flow'] = 0
     for comm in commits:
         #print(comm)
         userLogin = comm[0]
@@ -78,11 +74,16 @@ def calcContribution(data):
             contDict[userLogin] = existingScore + score
             statsDict[userLogin]['commitCount'] += 1
             statsDict[userLogin]['codeLines'] += comm[3]
+            if comm[4] not in statsDict[userLogin]['branches']:
+                statsDict[userLogin]['branches'].update({comm[4] : comm[3]})
+            else :
+                statsDict[userLogin]['branches'][comm[4]] += comm[3]
             non_private_total_score = total_score
     #print('hit it')
     for user in users:
         temp = contDict[user]
-        cont_percent = temp/float(non_private_total_score)
+        cont_decimal = temp/float(non_private_total_score)
+        cont_percent = "{:.2f}".format(cont_decimal * 100)
         #print(user)
         #print(cont_percent)
         contDict[user] = cont_percent

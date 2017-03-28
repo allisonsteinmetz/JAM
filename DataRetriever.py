@@ -122,11 +122,11 @@ def getCommits(owner, repo):
                             for f in commit.get('files') :
                                 filenames.append(f.get('filename'))
                             commitData = (commit.get('committer').get('login'), commit.get('commit').get('committer').get('date'), commit.get('commit').get('message').encode('utf-8'),
-                                commit.get('stats').get('total'), 'main', filenames)
+                                commit.get('stats').get('total'), branchName, filenames)
     #dict[0] = username; dict[1] = commit date; dict[2] = message w/ commit; dict[3] = total lines of code changed;
     #dict[4] = branch name; dict[5] = list of files changed
                         #print(commitData)
-                        commits.append(commitData)
+                            commits.append(commitData)
                     i = i + 1
         return commits
     else:
