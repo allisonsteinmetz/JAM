@@ -38,18 +38,7 @@ def login():
             #needs an error message
             return render_template('login.html')
         else:
-            #ALL THIS STUFF WILL NEED TO BE DELETED ONCE THE PROJECT STARTS CALLING FROM THE CORRECT LOCATION
-            # project = input("Enter a project or organization")
-            # searchResults = search('MyPureCloud', "organizations")
-            # print(searchResults)
-            # searchResults = search('agithub', "projects")
-            # print(searchResults)
-            projectName = 'allisonsteinmetz/JAM'
-            #printData = getProjectData(authToken, projectName)
-            # printDatas = getOrganizationData(authToken, 'railsbridge-montreal')
-            #replace the redirect below with a redirect to the search page instead, when it is complete.
             return redirect(url_for('homepage'))
-            #return redirect(url_for('success', data = printData))
     else: #if the user just wanted to load the page, load the page.
         return render_template('login.html')
 
