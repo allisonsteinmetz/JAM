@@ -38,9 +38,33 @@
                 leaderDiv = document.getElementById('leadershipDiv');
                 $(leaderDiv).show();
             }
-            function drawLineOfCodeChart() {
+            function numCommitsChart() {
                 var data = google.visualization.arrayToDataTable([
-                    ['Task', 'Hours per Day'],
+                    ['User', 'Num of Commits'],
+                    ['User', {{ userData['uniqueStats']['commitCount']}}],
+                    ['Other Contributors', 37]
+                ]);
+
+                var options = {
+                    legend: 'none',
+                    backgroundColor: 'transparent',
+                    pieSliceTextStyle: {
+                      color: 'white',
+                      fontSize:14
+                    },
+                    colors: ['#a00400', '#A96363'],
+                    tooltip: { textStyle: { fontSize: 12 } },
+                    width: 225,
+                    height: 200,
+                    chartArea: {'width': '80%', 'height': '80%'}
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('commitsChart'));
+                chart.draw(data, options);
+            }
+            function linesOfCodeChart() {
+                var data = google.visualization.arrayToDataTable([
+                    ['User', 'Lines of Code'],
                     ['User', {{ userData['uniqueStats']['codeLines'] }}],
                     ['Other Contributors', 1913]
                 ]);
@@ -52,6 +76,7 @@
                       color: 'white',
                       fontSize:14
                     },
+                    colors: ['#3366cc','#6b89c6'],
                     tooltip: { textStyle: { fontSize: 12 } },
                     width: 225,
                     height: 200,
@@ -59,6 +84,30 @@
                 };
 
                 var chart = new google.visualization.PieChart(document.getElementById('linesOfCodeChart'));
+                chart.draw(data, options);
+            }
+            function numCommentsChart() {
+                var data = google.visualization.arrayToDataTable([
+                    ['User', 'Num of Comments'],
+                    ['User', 32],
+                    ['Other Contributors', 57]
+                ]);
+
+                var options = {
+                    legend: 'none',
+                    backgroundColor: 'transparent',
+                    pieSliceTextStyle: {
+                      color: 'white',
+                      fontSize:14
+                    },
+                    colors: ['#10872b', '#61996e'],
+                    tooltip: { textStyle: { fontSize: 12 } },
+                    width: 225,
+                    height: 200,
+                    chartArea: {'width': '80%', 'height': '80%'}
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('commentsChart'));
                 chart.draw(data, options);
             }
         </script>
@@ -131,9 +180,35 @@
         <div id="contributionDiv" class="mainDiv" style="display: none;">
             <h2 class="infoTitle">Contribution</h2>
             <div class="infoDiv">
-              <div class="chartDiv">
+              <div class="chartDiv" style="float: left">
+                <h3 style="text-align: center">Number of Commits</h3>
+                <div id="commitsChart" style="width: 225px; height: 200px; margin: 0 auto;"></div>
+              </div>
+              <div class="chartDiv" style="display: inline-block">
                 <h3 style="text-align: center">Lines of Code Contributed</h3>
-                <div id="linesOfCodeChart" style="width: 225px; height: 200px;"></div>
+                <div id="linesOfCodeChart" style="width: 225px; height: 200px; margin: 0 auto;"></div>
+              </div>
+              <div class="chartDiv" style="float: right">
+                <h3 style="text-align: center">Number of Comments</h3>
+                <div id="commentsChart" style="width: 225px; height: 200px; margin: 0 auto;"></div>
+              </div>
+              <div class="infoDiv">
+                  <div class="column-left">
+                      <h3 id="info">Overall:
+                          {{ userData['contribution'] }}%</h3>
+                  </div>
+                  <div class="column-center">
+                      <p>Number of Commits:
+                          {{ userData['uniqueStats']['commitCount'] }}</p>
+                      <p>Lines of Code:
+                          {{ userData['uniqueStats']['codeLines'] }}</p>
+                      <p>Lines of Code accepted: 19,782</p>
+                  </div>
+                  <div class="column-right">
+                      <p>Commits accepted: 279</p>
+                      <p>Major Contribution Branches: 3</p>
+                      <p>Number of Comments: 32</p>
+                  </div>
               </div>
             </div>
         </div>
@@ -144,7 +219,9 @@
         <script>
             fixFormatting();
             google.charts.load("current", {packages: ["corechart"]});
-            google.charts.setOnLoadCallback(drawLineOfCodeChart);
+            google.charts.setOnLoadCallback(linesOfCodeChart);
+            google.charts.setOnLoadCallback(numCommitsChart);
+            google.charts.setOnLoadCallback(numCommentsChart);
         </script>
     </body>
 </html>
