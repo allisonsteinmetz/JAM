@@ -79,3 +79,16 @@
 .dropdown:hover .dropbtn {
     background-color: #a00400;
 }
+
+.chartDiv{
+  border-radius: 10px;
+  border: solid;
+  border-color: #a9a9a9;
+  border-width: 1px;
+  margin: 1%;
+  padding: 1%;
+  width: 350px;
+}
+#linesOfCodeChart{
+  margin: 0 auto;
+}

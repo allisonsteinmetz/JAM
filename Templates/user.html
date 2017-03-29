@@ -8,31 +8,58 @@
         <link rel="stylesheet" type="text/css" href="/static/usersList.css">
         <link rel="stylesheet" type="text/css" href="/static/user.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script src="../../static/user.js"></script>
         <script>
-            function reload(){
-              leaderDiv = document.getElementById('leadershipDiv');
-              $(leaderDiv).hide();
-              contribDiv = document.getElementById('contributionDiv');
-              $(contribDiv).hide();
-              mainDiv = document.getElementById('userInfoDiv');
-              $(mainDiv).show();
+            google.charts.load('current', {'packages': ['corechart']});
+            google.charts.setOnLoadCallback(drawPieChart);
+
+            function reload() {
+                leaderDiv = document.getElementById('leadershipDiv');
+                $(leaderDiv).hide();
+                contribDiv = document.getElementById('contributionDiv');
+                $(contribDiv).hide();
+                mainDiv = document.getElementById('userInfoDiv');
+                $(mainDiv).show();
             }
             function loadContribution() {
-              mainDiv = document.getElementById('userInfoDiv');
-              $(mainDiv).hide();
-              leaderDiv = document.getElementById('leadershipDiv');
-              $(leaderDiv).hide();
-              contribDiv = document.getElementById('contributionDiv');
-              $(contribDiv).show();
+                mainDiv = document.getElementById('userInfoDiv');
+                $(mainDiv).hide();
+                leaderDiv = document.getElementById('leadershipDiv');
+                $(leaderDiv).hide();
+                contribDiv = document.getElementById('contributionDiv');
+                $(contribDiv).show();
             }
-            function loadLeadership(){
-              mainDiv = document.getElementById('userInfoDiv');
-              $(mainDiv).hide();
-              contribDiv = document.getElementById('contributionDiv');
-              $(contribDiv).hide();
-              leaderDiv = document.getElementById('leadershipDiv');
-              $(leaderDiv).show();
+            function loadLeadership() {
+                mainDiv = document.getElementById('userInfoDiv');
+                $(mainDiv).hide();
+                contribDiv = document.getElementById('contributionDiv');
+                $(contribDiv).hide();
+                leaderDiv = document.getElementById('leadershipDiv');
+                $(leaderDiv).show();
+            }
+            function drawLineOfCodeChart() {
+                var data = google.visualization.arrayToDataTable([
+                    ['Task', 'Hours per Day'],
+                    ['User', {{ userData['uniqueStats']['codeLines'] }}],
+                    ['Other Contributors', 1913]
+                ]);
+
+                var options = {
+                    legend: 'none',
+                    backgroundColor: 'transparent',
+                    pieSliceTextStyle: {
+                      color: 'white',
+                      fontSize:14
+                    },
+                    tooltip: { textStyle: { fontSize: 12 } },
+                    width: 225,
+                    height: 200,
+                    chartArea: {'width': '80%', 'height': '80%'}
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('linesOfCodeChart'));
+                chart.draw(data, options);
             }
         </script>
     </head>
@@ -62,7 +89,7 @@
             <div class="infoDiv">
                 <div class="column-left">
                     <h3 id="info">Overall:
-                        {{ userData['contribution'] }}</h3>
+                        {{ userData['contribution'] }}%</h3>
                 </div>
                 <div class="column-center">
                     <p>Number of Commits:
@@ -101,18 +128,23 @@
                 <h3 id="info">Team 1: allisonsteinmetz, Juicearific, MananVPatel</h3>
             </div>
         </div>
-        <div id="contributionDiv" class="mainDiv">
-          <h2 class="infoTitle">Contribution</h2>
-          <div class="infoDiv">
-          </div>
+        <div id="contributionDiv" class="mainDiv" style="display: none;">
+            <h2 class="infoTitle">Contribution</h2>
+            <div class="infoDiv">
+              <div class="chartDiv">
+                <h3 style="text-align: center">Lines of Code Contributed</h3>
+                <div id="linesOfCodeChart" style="width: 225px; height: 200px;"></div>
+              </div>
+            </div>
         </div>
-        <div id="leadershipDiv" class="mainDiv">
-          <h2 class="infoTitle">Leadership</h2>
-          <div class="infoDiv">
-          </div>
+        <div id="leadershipDiv" class="mainDiv" style="display: none;">
+            <h2 class="infoTitle">Leadership</h2>
+            <div class="infoDiv"></div>
         </div>
         <script>
             fixFormatting();
+            google.charts.load("current", {packages: ["corechart"]});
+            google.charts.setOnLoadCallback(drawLineOfCodeChart);
         </script>
     </body>
 </html>
