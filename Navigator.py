@@ -9,9 +9,9 @@ from Analyzer import analyzeData, trainData
 from SearchController import getOrganizations, getProjects
 # import mysql.connector as mariadb
 # import json
-# import time
+import time
 
-# now = time.strftime("%c")
+#now = time.strftime("%c")
 #print "Current date & time " + time.strftime("%c")
 
 
@@ -59,12 +59,15 @@ def select():
     print(name)
     searchType = request.form['searchType']
     if (searchType == "organizations"):
+        print(time.strftime("%c"))
         data = getOrganizationData(authToken, name)
     else:
+        print(time.strftime("%c"))
         data = getProjectData(authToken, name)
 
     global usersData
     usersData = analyzeData(name, data)
+    print(time.strftime("%c"))
     return json.dumps(usersData)
 
 @app.route('/users')
@@ -74,7 +77,7 @@ def users():
 
 @app.route('/userinfo/<username>/<index>')
 def showUserInfo(username, index):
-    return render_template('user.html', name=username, userData = usersData[int(index) - 1])
+    return render_template('user.html', name=username, userData = usersData[int(index) - 1], data = usersData)
 
 @app.route('/teaminfo/<projname>/<teamnumber>')
 def showTeam(number):
