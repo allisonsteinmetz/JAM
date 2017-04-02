@@ -16,11 +16,11 @@ td{
   margin-top: 1%;
 }
 .navbar.navbar-default{
-  background-color: #A96363;
+  background-color: #943838;
   border-color: black;
 }
 .btn.btn-search.btn-default{
-  background-color: #BA0601;
+  background-color: #CC0000;
   color: white;
   border-color: black;
 }
@@ -41,7 +41,7 @@ td{
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    z-index: 2;
     padding-top: 100px;
     left: 0;
     top: 0;

@@ -18,7 +18,7 @@ import time
 app = Flask(__name__)
 authToken = 'empty token'
 usersData = 'No data'
-name = 'No Project Name'
+projName = 'No Project Name'
 
 @app.route('/')
 def homepage():
@@ -54,30 +54,30 @@ def search():
 
 @app.route('/select', methods=['POST'])
 def select():
-    global name
-    name = request.form['name']
-    print(name)
+    global projName
+    projName = request.form['name']
+    print(projName)
     searchType = request.form['searchType']
     if (searchType == "organizations"):
         print(time.strftime("%c"))
-        data = getOrganizationData(authToken, name)
+        data = getOrganizationData(authToken, projName)
     else:
         print(time.strftime("%c"))
-        data = getProjectData(authToken, name)
+        data = getProjectData(authToken, projName)
 
     global usersData
-    usersData = analyzeData(name, data)
+    usersData = analyzeData(projName, data)
     print(time.strftime("%c"))
     return json.dumps(usersData)
 
 @app.route('/users')
 def users():
     print(usersData)
-    return render_template('usersList.html', projectName = name,usersData = usersData)
+    return render_template('usersList.html', projectName = projName, usersData = usersData)
 
 @app.route('/userinfo/<username>/<index>')
 def showUserInfo(username, index):
-    return render_template('user.html', name=username, userData = usersData[int(index) - 1], data = usersData)
+    return render_template('user.html', projectName = projName, userData = usersData[int(index) - 1], data = usersData)
 
 @app.route('/teaminfo/<projname>/<teamnumber>')
 def showTeam(number):

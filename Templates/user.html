@@ -11,13 +11,10 @@
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script src="../../static/user.js"></script>
         <script>
-            google.charts.load('current', {'packages': ['corechart']});
-            google.charts.setOnLoadCallback(drawPieChart);
-
             function reload() {
-                leaderDiv = document.getElementById('leadershipDiv');
+                leaderDiv = document.getElementById('leadershipSpecDiv');
                 $(leaderDiv).hide();
-                contribDiv = document.getElementById('contributionDiv');
+                contribDiv = document.getElementById('contributionSpecDiv');
                 $(contribDiv).hide();
                 mainDiv = document.getElementById('userInfoDiv');
                 $(mainDiv).show();
@@ -25,17 +22,17 @@
             function loadContribution() {
                 mainDiv = document.getElementById('userInfoDiv');
                 $(mainDiv).hide();
-                leaderDiv = document.getElementById('leadershipDiv');
+                leaderDiv = document.getElementById('leadershipSpecDiv');
                 $(leaderDiv).hide();
-                contribDiv = document.getElementById('contributionDiv');
+                contribDiv = document.getElementById('contributionSpecDiv');
                 $(contribDiv).show();
             }
             function loadLeadership() {
                 mainDiv = document.getElementById('userInfoDiv');
                 $(mainDiv).hide();
-                contribDiv = document.getElementById('contributionDiv');
+                contribDiv = document.getElementById('contributionSpecDiv');
                 $(contribDiv).hide();
-                leaderDiv = document.getElementById('leadershipDiv');
+                leaderDiv = document.getElementById('leadershipSpecDiv');
                 $(leaderDiv).show();
             }
             function numCommitsChart() {
@@ -118,24 +115,28 @@
                 <nav class="navbar navbar-default">
                     <div class="nav nav-justified navbar-nav">
                         <img id="icon" src="/static/genesyslogo.png"/>
-                        <div id="usernameDiv">
-                            <h2 id="username">{{ userData['userLogin'] }}</h2>
-                        </div>
-                        <div class="dropdown">
-                            <button class="dropbtn">Select Content</button>
-                            <div class="dropdown-content">
-                                <a onclick="reload()">Overview</a>
-                                <a onclick="loadContribution()">Contribution</a>
-                                <a onclick="loadLeadership()">Leadership</a>
-                            </div>
+                        <div id="titleDiv">
+                            <h2 id="pageTitle">{{ projectName }}</h2>
                         </div>
                     </div>
                 </nav>
             </div>
         </div>
-        <div id="userInfoDiv" class="mainDiv">
+        <div class="mainDiv">
+          <div id="usernameDiv">
+            <h2 id="username">{{ userData['userLogin'] }}</h2>
+          </div>
+          <div class="dropdown">
+              <button class="dropbtn">Select Content</button>
+              <div class="dropdown-content">
+                  <a onclick="reload()">Overview</a>
+                  <a onclick="loadContribution()">Contribution</a>
+                  <a onclick="loadLeadership()">Leadership</a>
+              </div>
+          </div>
+        <div class="infoDiv" id="userInfoDiv">
             <h2 class="infoTitle">Contribution</h2>
-            <div class="infoDiv">
+            <div class="infoDiv" id="contributionDiv">
                 <div class="column-left">
                     <h3 id="info">Overall:
                         {{ userData['contribution'] }}%</h3>
@@ -154,7 +155,7 @@
                 </div>
             </div>
             <h2 class="infoTitle">Leadership</h2>
-            <div class="infoDiv">
+            <div class="infoDiv" id="leadershipDiv">
                 <div class="column-left">
                     <h3 id="info">Overall:
                         {{ userData['leadership'] }}</h3>
@@ -169,17 +170,17 @@
                 </div>
             </div>
             <h2 class="infoTitle">Skills</h2>
-            <div class="infoDiv">
+            <div class="infoDiv" id="skillsDiv">
                 <h3 id="info" class="languages">{{ userData['languages'] }}</h3>
             </div>
             <h2 class="infoTitle">Teams</h2>
-            <div class="infoDiv">
+            <div class="infoDiv" id="teamsDiv">
                 <h3 id="info">Team 1: allisonsteinmetz, Juicearific, MananVPatel</h3>
             </div>
         </div>
-        <div id="contributionDiv" class="mainDiv" style="display: none;">
+        <div id="contributionSpecDiv" class="infoDiv" style="display: none;">
             <h2 class="infoTitle">Contribution</h2>
-            <div class="infoDiv">
+            <div class="infoDiv" style="background-color:#ededed">
               <div class="chartDiv" style="float: left">
                 <h3 style="text-align: center">Number of Commits</h3>
                 <div id="commitsChart" style="width: 225px; height: 200px; margin: 0 auto;"></div>
@@ -192,7 +193,7 @@
                 <h3 style="text-align: center">Number of Comments</h3>
                 <div id="commentsChart" style="width: 225px; height: 200px; margin: 0 auto;"></div>
               </div>
-              <div class="infoDiv">
+              <div class="infoDiv" style="background-color:#8c8c8c">
                   <div class="column-left">
                       <h3 id="info">Overall:
                           {{ userData['contribution'] }}%</h3>
@@ -212,10 +213,11 @@
               </div>
             </div>
         </div>
-        <div id="leadershipDiv" class="mainDiv" style="display: none;">
+        <div id="leadershipSpecDiv" class="infoDiv"style="display: none;">
             <h2 class="infoTitle">Leadership</h2>
             <div class="infoDiv"></div>
         </div>
+      </div>
         <script>
             fixFormatting();
             google.charts.load("current", {packages: ["corechart"]});
