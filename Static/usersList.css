@@ -16,6 +16,9 @@ li {
 }
 .container{
   margin-top: 1%;
+  width: 80%;
+  margin-left: 10%;
+  margin-right: 10%;
 }
 .navbar.navbar-default{
   background-color: #943838;
