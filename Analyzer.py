@@ -1,7 +1,7 @@
-# lines of code accepted
-# commits accepted
-# major contribution branches
-# # of comments
+#IF THIS CODE DOESN'T WORK RIGHT NOW:
+#comment out the "import matplotlib.pyplot as plt"
+#comment out the calling of calcTeams
+#should then work again
 
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
@@ -41,6 +41,7 @@ def analyzeData(name, data):
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' : statsDict.get(user)}
         userStats.append(tempDict)
+    tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' :statsDict.get('-')}
     storePostAnalysisData(name, userStats)
     return userStats
 #    commitList = data.get('commits')
@@ -119,6 +120,8 @@ def convertDate(date):
 
 def calcContribution(data):
     total_score = 0
+    total_commits = 0
+    total_codeLines = 0
     commits = data.get('commits')
     comments = data.get('comments')
     #print(users)
@@ -129,6 +132,7 @@ def calcContribution(data):
         branches = {}
         bCount = []
         statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches}
+    statsDict['-'] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches}
     for comm in commits:
         if comm[4] not in branchList:
             branchList.append(comm[4])
@@ -163,7 +167,9 @@ def calcContribution(data):
             existingScore = contDict.setdefault(userLogin, 0)
             contDict[userLogin] = existingScore + score
             statsDict[userLogin]['commitCount'] += 1
+            total_commits += 1
             statsDict[userLogin]['codeLines'] += comm[3]
+            total_codeLines += comm[3]
             if comm[4] not in statsDict[userLogin]['branches']:
                 statsDict[userLogin]['branches'].update({comm[4] : comm[3]})
             else :
@@ -177,6 +183,9 @@ def calcContribution(data):
         #print(user)
         #print(cont_percent)
         contDict[user] = cont_percent
+    statsDict['-']['commitCount'] = total_commits
+    statsDict['-']['codeLines'] = total_codeLines
+    contDict['-'] = total_score
     return 1;
     #Create dictionary
     #add each user and a list of ints (per) to the dictionary
