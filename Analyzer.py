@@ -6,8 +6,11 @@
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
 #from sklearn.feature_extraction import DictVectorizer
-#from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+##from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import mysql.connector as mariadb
+import numpy as np
+from sklearn.cluster import MeanShift
+import matplotlib.pyplot as plt
 import json
 import time
 
@@ -18,12 +21,22 @@ contDict = {}
 commitCount = {}
 userLangs = {}
 statsDict = {}
+branchList = []
+fileList = []
+dateList = []
+fileExtensions = []
+fileVals = {}
+dateVals = {}
+branchVals = {}
+
 global users
 def analyzeData(name, data):
     userStats = []
     global users
     users = data.get('users')
     calcContribution(data)
+    assignVals(data)
+    calcTeams(data)
     for user in users:
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' : statsDict.get(user)}
@@ -35,6 +48,74 @@ def analyzeData(name, data):
 #    for i in commitList:
 #        arglist.append(i[2].encode('utf-8'))
 #    searchWords(arglist)
+def calcTeams(data):
+    commits = data.get('commits')
+    analyzeThis = []
+    for comm in commits:
+        branchvalue = branchVals[comm[4]]
+        filevalue = 0
+        filecount = 0
+        for f in comm[5]:
+            filevalue += fileVals[f]
+            filecount += 1
+        filevalue = float(filevalue) / filecount
+        datevalue = dateVals[comm[1].split('T')[0]]
+        commData = [branchvalue, filevalue, datevalue]
+        analyzeThis.append(commData)
+
+    ms = MeanShift()
+    ms.fit(analyzeThis)
+    labels = ms.labels_
+    cluster_centers = ms.cluster_centers_
+    n_clusters_ = len(np.unique(labels))
+    print("Number of estimated clusters:", n_clusters_)
+    colors = 10*['r.','g.','b.','c.','k.','y.','m.']
+
+    for i in range(len(analyzeThis)):
+        plt.plot(analyzeThis[i][0], analyzeThis[i][2], colors[labels[i]], markersize = 10)
+
+    plt.scatter(cluster_centers[:,0], cluster_centers[:,1],
+        marker = "x", s=150, linewidths = 5, zorder=10)
+
+    for c in cluster_centers:
+        print(c)
+
+    plt.show()
+
+def assignVals(data):
+    branchCount = 0
+    for b in branchList:
+        branchVals[b] = branchCount
+        branchCount += 5
+    extVals = {}
+    feCount = 0
+    for fe in fileExtensions:
+        extVals[fe] = feCount
+        feCount += 5
+    for f in fileList:
+        e = f.split('.')
+        ext = e[len(e)-1]
+        fileVals[f] = extVals[ext]
+        extVals[ext] += .05
+    commits = data.get('commits')
+    start = commits[len(commits)-1][1]
+    startDate_unformatted = start.split('T')[0]
+    startDate = convertDate(startDate_unformatted)
+    for d in dateList:
+        date = convertDate(d)
+        score = ((date[1] - startDate[1]) * 365) + (date[0] - startDate[0])
+        score = float(score) / 100
+        dateVals[d] = score
+    #print(branchVals)
+    #print(fileVals)
+    #print(dateVals)
+
+def convertDate(date):
+    formatted = date.split('-')
+    months = {'01': 0, '02': 31, '03': 59, '04': 90, '05': 120, '06': 151, '07': 181, '08': 212, '09': 243, '10': 273, '11': 304, '12':334}
+
+    fdate = [months[formatted[1]] + int(formatted[2]), int(formatted[0])]
+    return fdate
 
 def calcContribution(data):
     total_score = 0
@@ -49,7 +130,16 @@ def calcContribution(data):
         bCount = []
         statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches}
     for comm in commits:
-        #print(comm)
+        if comm[4] not in branchList:
+            branchList.append(comm[4])
+        for f in comm[5]:
+            if f not in fileList:
+                fileList.append(f)
+                ext = f.split('.')
+                if ext[len(ext) - 1] not in fileExtensions:
+                    fileExtensions.append(ext[len(ext)-1])
+        if comm[1].split('T')[0] not in dateList:
+            dateList.append(comm[1].split('T')[0])
         userLogin = comm[0]
         if (userLogin != 'Private User') and (userLogin != 'web-flow'):
             filenames = comm[5]
