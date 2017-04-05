@@ -105,8 +105,8 @@ def getCommits(owner, repo):
                 if link != 'NULL' :
                     lastpage = link[1].split('>')[1].split('=')[4]
                 commits = []
-                i = 0
-                while i < int(lastpage) :
+                i = 1
+                while i <= int(lastpage) :
                     print (i)
                     status, data = token.repos[owner][repo].commits.get(sha=branchName, per_page='100', page=i)
                     codes = []
