@@ -9,8 +9,8 @@ from flask import make_response
 ##from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import mysql.connector as mariadb
 import numpy as np
-from sklearn.cluster import MeanShift
-import matplotlib.pyplot as plt
+#from sklearn.cluster import MeanShift
+#import matplotlib.pyplot as plt
 import json
 import time
 
@@ -36,7 +36,7 @@ def analyzeData(name, data):
     users = data.get('users')
     calcContribution(data)
     assignVals(data)
-    calcTeams(data)
+    #calcTeams(data)
     for user in users:
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' : statsDict.get(user)}
@@ -233,7 +233,7 @@ def trainData(data):
         return false
 
 def storePostAnalysisData(repoName, data):
-    mariadb_connection = mariadb.connect(user='root', password='l&a731', database='postAnalyzedDB')
+    mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='postAnalyzedDB')
     cursor = mariadb_connection.cursor()
 
     for user in data:

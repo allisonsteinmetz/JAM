@@ -159,7 +159,7 @@ def getRepositories(org):
         return "Could not retrieve organization's repositories"
 
 def storePreAnalysisData(repoName, data):
-    mariadb_connection = mariadb.connect(user='root', password='l&a731', database='preAnalyzedDB')
+    mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='preAnalyzedDB')
     cursor = mariadb_connection.cursor()
 
     username = data.get('users')
