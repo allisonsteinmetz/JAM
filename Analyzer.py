@@ -5,12 +5,10 @@
 
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
-#from sklearn.feature_extraction import DictVectorizer
-##from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 import mysql.connector as mariadb
 import numpy as np
 from sklearn.cluster import MeanShift
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import json
 import time
 
@@ -234,7 +232,7 @@ def trainData(data):
         return false
 
 def storePostAnalysisData(repoName, data):
-    mariadb_connection = mariadb.connect(user='root', password='l&a731', database='postAnalyzedDB')
+    mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='postAnalyzedDB')
     cursor = mariadb_connection.cursor()
 
     for user in data:
