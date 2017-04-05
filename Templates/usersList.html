@@ -32,6 +32,7 @@
                     <th>Teams</th>
                 </tr>
                 {% for user in usersData %}
+                  {% if user['userLogin'] != '-' %}
                     <tr id="userRow" onclick="getUser(this)">
                         <td>{{ user['userLogin'] }}</td>
                         <td class="contributionScore">{{ user['contribution'] }}%</td>
@@ -39,6 +40,7 @@
                         <td class="languages">{{ user['languages'] }}</td>
                         <td>{{ user['teams'] }}</td>
                     </tr>
+                  {% endif %}
                 {% endfor %}
                 <script>
                     fixFormatting();

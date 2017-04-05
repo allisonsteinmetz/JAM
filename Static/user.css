@@ -7,12 +7,10 @@
 }
 #usernameDiv{
   display: inline-block;
-  width: 73%;
-  margin-left: 13%;
-}
-#username{
-  text-align: center;
-  color: white;
+  width: 45%;
+  margin-left: 41%;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 .infoTitle{
   text-align: center;

@@ -5,6 +5,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
         <link rel="stylesheet" type="text/css" href="/static/usersList.css">
         <link rel="stylesheet" type="text/css" href="/static/user.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -39,7 +40,7 @@
                 var data = google.visualization.arrayToDataTable([
                     ['User', 'Num of Commits'],
                     ['User', {{ userData['uniqueStats']['commitCount']}}],
-                    ['Other Contributors', 37]
+                    ['Other Contributors', ({{ totalData['uniqueStats']['commitCount'] }} - {{ userData['uniqueStats']['commitCount']}})]
                 ]);
 
                 var options = {
@@ -63,7 +64,7 @@
                 var data = google.visualization.arrayToDataTable([
                     ['User', 'Lines of Code'],
                     ['User', {{ userData['uniqueStats']['codeLines'] }}],
-                    ['Other Contributors', 1913]
+                    ['Other Contributors', ({{ totalData['uniqueStats']['codeLines'] }} - {{ userData['uniqueStats']['codeLines'] }})]
                 ]);
 
                 var options = {
@@ -124,7 +125,13 @@
         </div>
         <div class="mainDiv">
           <div id="usernameDiv">
-            <h2 id="username">{{ userData['userLogin'] }}</h2>
+            <select class="selectpicker" data-live-search="true">
+              {% for user in data %}
+                {% if user['userLogin'] != '-' %}
+                  <option>{{ user['userLogin'] }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
           </div>
           <div class="dropdown">
               <button class="dropbtn">Select Content</button>
@@ -226,5 +233,7 @@
             google.charts.setOnLoadCallback(numCommitsChart);
             google.charts.setOnLoadCallback(numCommentsChart);
         </script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     </body>
 </html>

@@ -19,6 +19,7 @@ app = Flask(__name__)
 authToken = 'empty token'
 usersData = 'No data'
 projName = 'No Project Name'
+totalData = 'None'
 
 @app.route('/')
 def homepage():
@@ -67,6 +68,9 @@ def select():
 
     global usersData
     usersData = analyzeData(projName, data)
+    global totalData
+    totalData = usersData[len(usersData) - 1]
+    print totalData
     print(time.strftime("%c"))
     return json.dumps(usersData)
 
@@ -77,7 +81,7 @@ def users():
 
 @app.route('/userinfo/<username>/<index>')
 def showUserInfo(username, index):
-    return render_template('user.html', projectName = projName, userData = usersData[int(index) - 1], data = usersData)
+    return render_template('user.html', projectName = projName, userData = usersData[int(index) - 1], totalData = totalData, data = usersData)
 
 @app.route('/teaminfo/<projname>/<teamnumber>')
 def showTeam(number):
