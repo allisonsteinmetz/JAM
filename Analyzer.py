@@ -41,8 +41,9 @@ def analyzeData(name, data):
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' : statsDict.get(user)}
         userStats.append(tempDict)
-    tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' :statsDict.get('-')}
     storePostAnalysisData(name, userStats)
+    tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' :statsDict.get('-')}
+    userStats.append(tempDict)
     return userStats
 #    commitList = data.get('commits')
 #    arglist = []
@@ -81,7 +82,7 @@ def calcTeams(data):
     for c in cluster_centers:
         print(c)
 
-    plt.show()
+    #plt.show()
 
 def assignVals(data):
     branchCount = 0
