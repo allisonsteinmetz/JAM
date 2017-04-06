@@ -47,5 +47,6 @@ if __name__ == '__main__':
         branches = user.get('uniqueStats').get('branches')
         for branch in branches:
             print(branch)
+            print(branches[branch])
         #for lang in user.get('languages'):
         #    print(lang)
