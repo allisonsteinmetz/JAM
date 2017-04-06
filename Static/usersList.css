@@ -1,6 +1,7 @@
-#icon{
+.icon{
   width: 12%;
   margin-left: 1%;
+  margin-bottom: 1%;
 }
 #titleDiv{
   display: inline-block;

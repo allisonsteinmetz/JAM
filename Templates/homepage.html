@@ -15,18 +15,16 @@
             <div class="row">
                 <nav class="navbar navbar-default">
                     <div class="nav nav-justified navbar-nav">
+                      <img class="icon" src="/static/spyteam.png"/>
                         <form class="navbar-form navbar-search" id="searchForm" role="form" onsubmit="return search();">
-                            <div class="input-group">
-
-                                <div class="input-group-btn">
+                            <div class="input-group" id="searchGroup">
+                                <div class="input-group-btn" id="selectionDiv">
                                     <select name="searchType" id="typeSelector" value="projects" class="selectpicker form-control">
                                       <option value="projects">Projects</option>
                                       <option value="organizations">Organizations</option>
                                     </select>
                                 </div>
-
-                                <input type="text" name="searchKey" class="form-control">
-
+                                <input id="searchBar" type="text" name="searchKey" class="form-control">
                                 <div class="input-group-btn">
                                     <button id="searchButton" type="button" class="btn btn-search btn-default" onclick="return search();">
                                         GO
@@ -34,6 +32,7 @@
                                 </div>
                             </div>
                         </form>
+                        <img class="icon" src="/static/genesyslogo.png"/>
                     </div>
                 </nav>
             </div>

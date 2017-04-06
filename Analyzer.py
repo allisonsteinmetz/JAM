@@ -8,7 +8,7 @@ from flask import make_response
 import mysql.connector as mariadb
 import numpy as np
 from sklearn.cluster import MeanShift
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import json
 import time
 

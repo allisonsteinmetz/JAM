@@ -32,10 +32,10 @@ td{
     transition: all .5s;
 }
 
-#icon{
-  width: 40px;
-  length: 40px;
-  margin: 15px;
+.icon{
+  width: 12%;
+  margin-left: 1%;
+  margin-bottom: 1%;
 }
 
 .modal {
@@ -59,6 +59,15 @@ td{
     width: 25%;
     margin-top: 5%;
 }
+#selectionDiv{
+  width: 15%;
+}
+#searchGroup{
+  width: 100%;
+}
+#searchBar{
+  width: 100%;
+}
 #loadingIcon{
   width: 50%;
   height: 50%;
@@ -67,4 +76,9 @@ td{
 }
 #analyzingText{
   text-align: center;
+}
+#searchForm{
+  display: inline-block;
+  width: 67%;
+  margin-left: 5%;
 }
