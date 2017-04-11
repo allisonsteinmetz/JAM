@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Teams & Skills Evaluator</title>
-    <meta name="description" content="An interactive getting started guide for Brackets.">
-    <link rel="stylesheet" type="text/css" href="/static/main.css">
-  </head>
-<body>
-    <div class="container">
-        <img src="/static/genesyslogo.png"/>
-        <form id="login" method="post">
-            <div class="form-input">
-                <input type="text" placeholder="Username" id="username" name="username"/>
-            </div>
-            <div class="form-input">
-                <input type="password" placeholder="Password" id="pwd" name="pwd"/>
-            </div>
-
-            <input type="submit" value="LOGIN" id="button"/>
-        </form>
-    </div>
-</body>
-
+    <head>
+        <meta charset="utf-8">
+        <title>Teams & Skills Evaluator</title>
+        <link rel="stylesheet" type="text/css" href="/static/main.css">
+    </head>
+    <body>
+        <div class="container">
+            <img src="/static/spyteam.png"/>
+            <form id="login" method="post">
+                <div class="form-input">
+                    <input type="text" placeholder="Username" id="username" name="username"/>
+                </div>
+                <div class="form-input">
+                    <input type="password" placeholder="Password" id="pwd" name="pwd"/>
+                </div>
+                <input type="submit" value="LOGIN" id="button"/>
+                <br>
+                <label id="label">By:</label>
+                <img id="genesyslogo" src="/static/genesyslogo.png"/>
+            </form>
+        </div>
+    </body>
 </html>

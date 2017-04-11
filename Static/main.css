@@ -41,3 +41,17 @@ input[type="text"], input[type="password"] {
     padding-left: 20px;
     border-radius: 5px;
 }
+
+#genesyslogo{
+  width: 100px;
+  height: 25px;
+  float: right;
+  margin-right: 10px;
+}
+
+#label{
+  color: white;
+  font-family: Arial;
+  margin-left: 350px;
+  font-size: 12px;
+}
