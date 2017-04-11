@@ -126,7 +126,7 @@
         </div>
         <div class="mainDiv">
           <div id="usernameDiv">
-            <select class="selectpicker" data-live-search="true">
+            <select id="userSelect" class="selectpicker" data-live-search="true">
               {% for user in data %}
                 {% if user['userLogin'] != '-' %}
                   <option>{{ user['userLogin'] }}</option>
@@ -233,6 +233,14 @@
             google.charts.setOnLoadCallback(linesOfCodeChart);
             google.charts.setOnLoadCallback(numCommitsChart);
             google.charts.setOnLoadCallback(numCommentsChart);
+
+            var select = document.getElementById("userSelect");
+            select.value = "{{ userData['userLogin'] }}";
+
+            $(document).on('change', 'select', function() {
+              console.log($(this).val());
+              window.location = "/userinfo/" + $(this).val() +"/"+ (select.selectedIndex + 1);
+            });
         </script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
