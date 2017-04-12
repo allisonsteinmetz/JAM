@@ -7,8 +7,8 @@ from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
 import mysql.connector as mariadb
 import numpy as np
-from sklearn.cluster import MeanShift
-import matplotlib.pyplot as plt
+#from sklearn.cluster import MeanShift
+#import matplotlib.pyplot as plt
 import json
 import time
 
@@ -34,7 +34,7 @@ def analyzeData(name, data):
     users = data.get('users')
     calcContribution(data)
     assignVals(data)
-    calcTeams(data)
+    #calcTeams(data)
     for user in users:
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' : statsDict.get(user)}
@@ -147,6 +147,7 @@ def calcContribution(data):
         if (userLogin != 'Private User') and (userLogin != 'web-flow'):
             filenames = comm[5]
             if comm[3] > 9:
+                getExtensions()
                 for f in filenames:
                     #print(f)
                     extension = f.split('.')
@@ -191,6 +192,19 @@ def calcContribution(data):
     #go through all commits, add to the appropriate list
     #print(commits)
     #print(users)
+
+def getExtensions():
+    mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='LanguageDB')
+    cursor = mariadb_connection.cursor()
+    cursor = mariadb_connection.cursor(buffered=True)
+    query = "SELECT lang, extensions FROM languages"
+
+    cursor.execute(query)
+    mariadb_connection.commit()
+    result = cursor.fetchall()
+    print(result)
+    return result;
+
 
 def searchWords(data):
     #this is what will end up using scikit
