@@ -11,6 +11,8 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script src="../../static/user.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script>
             function reload() {
                 leaderDiv = document.getElementById('leadershipSpecDiv');
@@ -126,10 +128,10 @@
         </div>
         <div class="mainDiv">
           <div id="usernameDiv">
-            <select id="userSelect" class="selectpicker" data-live-search="true">
+            <select id="userSelect" class="selectpicker" data-live-search="true" data-width="auto">
               {% for user in data %}
                 {% if user['userLogin'] != '-' %}
-                  <option>{{ user['userLogin'] }}</option>
+                  <option style="width: 100%">{{ user['userLogin'] }}</option>
                 {% endif %}
               {% endfor %}
             </select>
@@ -242,7 +244,5 @@
               window.location = "/userinfo/" + $(this).val() +"/"+ (select.selectedIndex + 1);
             });
         </script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
-        <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     </body>
 </html>
