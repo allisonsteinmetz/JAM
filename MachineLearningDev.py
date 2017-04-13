@@ -11,6 +11,7 @@ if __name__ == '__main__':
     #projname = 'torvalds/linux'
     projname = 'allisonsteinmetz/JAM'
     #projname = 'jpaugh/agithub'
+    #projname = 'juicearific/escargo'
     authToken = authenticate(username, password)
     projData = getProjectData(authToken, projname)
     data = analyzeData('dummyname', projData)

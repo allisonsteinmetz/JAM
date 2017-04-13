@@ -5,10 +5,10 @@
 
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
-import mysql.connector as mariadb
+#import mysql.connector as mariadb
 import numpy as np
-#from sklearn.cluster import MeanShift
-#import matplotlib.pyplot as plt
+from sklearn.cluster import AgglomerativeClustering as AC
+import matplotlib.pyplot as plt
 import json
 import time
 
@@ -20,12 +20,13 @@ commitCount = {}
 userLangs = {}
 statsDict = {}
 branchList = []
-fileList = []
+fileList = {}
 dateList = []
 fileExtensions = []
 fileVals = {}
 dateVals = {}
 branchVals = {}
+userFileCounts = {}
 
 global users
 def analyzeData(name, data):
@@ -34,12 +35,12 @@ def analyzeData(name, data):
     users = data.get('users')
     calcContribution(data)
     assignVals(data)
-    #calcTeams(data)
+    calcTeams(data)
     for user in users:
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' : statsDict.get(user)}
         userStats.append(tempDict)
-    storePostAnalysisData(name, userStats)
+#    storePostAnalysisData(name, userStats)
     tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' :statsDict.get('-')}
     userStats.append(tempDict)
     return userStats
@@ -50,6 +51,7 @@ def analyzeData(name, data):
 #    searchWords(arglist)
 def calcTeams(data):
     commits = data.get('commits')
+    userNames = []
     analyzeThis = []
     for comm in commits:
         branchvalue = branchVals[comm[4]]
@@ -58,15 +60,22 @@ def calcTeams(data):
         for f in comm[5]:
             filevalue += fileVals[f]
             filecount += 1
-        filevalue = float(filevalue) / filecount
+            fileList[f] += 1
+            #temp = userFileCounts[comm[0]].setdefault(f, 0)
+            #userFileCounts[comm[0]] = temp + 1
+        filevalue = float(filevalue) / (filecount * 5.25)
         datevalue = dateVals[comm[1].split('T')[0]]
         commData = [branchvalue, filevalue, datevalue]
         analyzeThis.append(commData)
+        userNames.append(comm[0])
 
-    ms = MeanShift()
-    ms.fit(analyzeThis)
-    labels = ms.labels_
-    cluster_centers = ms.cluster_centers_
+    for user in userFileCounts:
+        #print(user)
+
+    ac = AC(linkage="average")
+    ac.fit(analyzeThis)
+    labels = ac.labels_
+    #cluster_centers = ac.cluster_centers_
     n_clusters_ = len(np.unique(labels))
     print("Number of estimated clusters:", n_clusters_)
     colors = 10*['r.','g.','b.','c.','k.','y.','m.']
@@ -74,13 +83,19 @@ def calcTeams(data):
     for i in range(len(analyzeThis)):
         plt.plot(analyzeThis[i][0], analyzeThis[i][2], colors[labels[i]], markersize = 10)
 
-    plt.scatter(cluster_centers[:,0], cluster_centers[:,1],
-        marker = "x", s=150, linewidths = 5, zorder=10)
+    #plt.scatter(cluster_centers[:,0], cluster_centers[:,1],
+    #    marker = "x", s=150, linewidths = 5, zorder=10)
 
-    for c in cluster_centers:
-        print(c)
+    #for c in cluster_centers:
+    #    print(c)
 
     #plt.show()
+    i = 0
+    #for user in userNames:
+        #print(user)
+        #print(labels[i])
+        #i += 1
+    #print()
 
 def assignVals(data):
     branchCount = 0
@@ -91,7 +106,7 @@ def assignVals(data):
     feCount = 0
     for fe in fileExtensions:
         extVals[fe] = feCount
-        feCount += 5
+        feCount += 1
     for f in fileList:
         e = f.split('.')
         ext = e[len(e)-1]
@@ -131,13 +146,16 @@ def calcContribution(data):
         branches = {}
         bCount = []
         statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches}
+        userFileCounts[user] = {'default' : 0}
+    branches = {}
+    bCount = []
     statsDict['-'] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches}
     for comm in commits:
         if comm[4] not in branchList:
             branchList.append(comm[4])
         for f in comm[5]:
             if f not in fileList:
-                fileList.append(f)
+                fileList[f] = 0
                 ext = f.split('.')
                 if ext[len(ext) - 1] not in fileExtensions:
                     fileExtensions.append(ext[len(ext)-1])
@@ -147,7 +165,7 @@ def calcContribution(data):
         if (userLogin != 'Private User') and (userLogin != 'web-flow'):
             filenames = comm[5]
             if comm[3] > 9:
-                getExtensions()
+                #getExtensions()
                 for f in filenames:
                     #print(f)
                     extension = f.split('.')
@@ -186,6 +204,7 @@ def calcContribution(data):
     statsDict['-']['commitCount'] = total_commits
     statsDict['-']['codeLines'] = total_codeLines
     contDict['-'] = total_score
+    #print(fileList)
     return 1;
     #Create dictionary
     #add each user and a list of ints (per) to the dictionary
