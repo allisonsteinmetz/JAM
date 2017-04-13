@@ -59,6 +59,7 @@ def select():
     projName = request.form['name']
     print(projName)
     searchType = request.form['searchType']
+    # if postanalyzed data retrieved long than an hour ago
     if (searchType == "organizations"):
         print(time.strftime("%c"))
         data = getOrganizationData(authToken, projName)
@@ -68,6 +69,9 @@ def select():
 
     global usersData
     usersData = analyzeData(projName, data)
+
+    # else pull analyzeData from database and continue
+
     global totalData
     totalData = usersData[len(usersData) - 1]
     print totalData

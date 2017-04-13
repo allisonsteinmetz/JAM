@@ -69,8 +69,8 @@ def calcTeams(data):
         analyzeThis.append(commData)
         userNames.append(comm[0])
 
-    for user in userFileCounts:
-        #print(user)
+    # for user in userFileCounts:
+    #     #print(user)
 
     ac = AC(linkage="average")
     ac.fit(analyzeThis)
