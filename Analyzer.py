@@ -15,62 +15,82 @@ import time
 now = time.strftime("%c")
 
 default = 0
-contDict = {}
-commitCount = {}
-userLangs = {}
-statsDict = {}
-branchList = []
-fileList = {}
-dateList = []
-fileExtensions = []
-fileVals = {}
-dateVals = {}
-branchVals = {}
-userFileCounts = {}
+contDict = {}       #holds the contribution score of each user, as calculated in calcContribution.
+commitCount = {}    #holds the number of commits each user has made, for use in calcContribution.
+userLangs = {}      #holds the languages each user has coded in, for use in calcContribution.
+statsDict = {}      #holds the statistics about each user. These are generally found in calcContribution.
+branchList = []     #holds a list of all branches, for use in multiple parts of the analyzer.
+fileList = []       #holds a list of all the files with valid extensions. For use in calcTeams.
+dateList = []       #holds a list of all dates that commits were made on. For use in assignVals.
+global fileExtensions #holds a list of all valid file extensions. Pulled from the database. For use in calcTeams.
+fileVals = []       #holds a list of all files which we will be using binary values for. For use in calcTeams.
+startDate = []      #holds the date that the first commit was made on. For use in assignVals.
+dateVals = {}       #holds a list of values for all the dates that commits were made on. For use in calcTeams.
+branchVals = {}     #holds a list of values for branches. Branch values are enough to guarantee different clusters. used in calcTeams.
+global users        #will hold a list of all users.
 
-global users
 def analyzeData(name, data):
-    userStats = []
-    global users
-    users = data.get('users')
-    calcContribution(data)
-    assignVals(data)
-    calcTeams(data)
-    for user in users:
+    userStats = []  #holds the array of all data we will return.
+    global users                #modify the global users variable, don't create a local one.
+    users = data.get('users')   #get a list of all users from our pull.
+    makeLists(data)             #make a list of all branches, files, and dates that commits were made on.
+    calcContribution(data)      #calculate contribution for each user.
+    assignVals(data)            #assign values to branches and dates for use in clustering.
+    calcTeams(data)             #calculate which user work with what other users.
+    for user in users:          #for each user, package the data in a way that can be easily parsed on return.
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' : statsDict.get(user)}
-        userStats.append(tempDict)
-#    storePostAnalysisData(name, userStats)
+        userStats.append(tempDict)  #and add that data to the return data.
+#    storePostAnalysisData(name, userStats)     #store the data to the database in a post-analyzed form.
     tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' :statsDict.get('-')}
-    userStats.append(tempDict)
-    return userStats
-#    commitList = data.get('commits')
-#    arglist = []
-#    for i in commitList:
-#        arglist.append(i[2].encode('utf-8'))
-#    searchWords(arglist)
+    userStats.append(tempDict)  #store a "total" user. Name '-' cannot be used in GitHub.
+    return userStats    #return the data.
+
+def makeLists(data):
+    #call the database get function here instead
+    global fileExtensions
+    fileExtensions = {'py' : 'Python', 'java' : 'Java', 'class' : 'C#', 'cpp' : 'C++', 'cxx' : 'C++', 'js' : 'JavaScript', 'html' : 'HTML'}
+    #end call the database get function here instead
+    commits = data.get('commits')       #grab all the commits
+    for comm in commits:                #for each one, check:
+        if comm[4] not in branchList:   #for new branches, not already in the list
+            branchList.append(comm[4])
+        for f in comm[5]:               #for new files, not already in the list
+            if f not in fileList:
+                fileList.append(f)
+                ext = f.split('.')
+        tempdate = comm[1].split('T')[0]
+        if tempdate not in dateList:    #for new dates, not already in the list.
+            dateList.append(tempdate)
+    start = commits[len(commits)-1][1]
+    startDate_unformatted = start.split('T')[0]
+    startDate_formatted = convertDate(startDate_unformatted)
+    startDate.append(startDate_formatted[0])
+    startDate.append(startDate_formatted[1])
+    return
+
 def calcTeams(data):
     commits = data.get('commits')
     userNames = []
     analyzeThis = []
+    fileCount = len(fileVals)
     for comm in commits:
+        tempDict = {}
         branchvalue = branchVals[comm[4]]
-        filevalue = 0
-        filecount = 0
+        for f in fileVals:
+            tempDict.update({f : 0})
         for f in comm[5]:
-            filevalue += fileVals[f]
-            filecount += 1
-            fileList[f] += 1
-            #temp = userFileCounts[comm[0]].setdefault(f, 0)
-            #userFileCounts[comm[0]] = temp + 1
-        filevalue = float(filevalue) / (filecount * 5.25)
+            if f in fileVals:
+                tempDict.update({f : (fileCount* 100000)})
         datevalue = dateVals[comm[1].split('T')[0]]
-        commData = [branchvalue, filevalue, datevalue]
+        commData = [branchvalue, datevalue]
+        for f in fileVals:
+            commData.append(tempDict[f])
         analyzeThis.append(commData)
         userNames.append(comm[0])
-
-    # for user in userFileCounts:
-    #     #print(user)
+        print(comm[0])
+        print(datevalue)
+        print(tempDict)
 
     ac = AC(linkage="average")
     ac.fit(analyzeThis)
@@ -78,139 +98,101 @@ def calcTeams(data):
     #cluster_centers = ac.cluster_centers_
     n_clusters_ = len(np.unique(labels))
     print("Number of estimated clusters:", n_clusters_)
-    colors = 10*['r.','g.','b.','c.','k.','y.','m.']
 
-    for i in range(len(analyzeThis)):
-        plt.plot(analyzeThis[i][0], analyzeThis[i][2], colors[labels[i]], markersize = 10)
-
-    #plt.scatter(cluster_centers[:,0], cluster_centers[:,1],
-    #    marker = "x", s=150, linewidths = 5, zorder=10)
-
-    #for c in cluster_centers:
-    #    print(c)
-
-    #plt.show()
     i = 0
-    #for user in userNames:
-        #print(user)
-        #print(labels[i])
-        #i += 1
-    #print()
+    for a in analyzeThis :
+        #print(userNames[i])
+        #print(a[1])
+        print(labels[i])
+        i += 1
 
 def assignVals(data):
+    #assign values to branches. These are to be large enough that they are definitely in different clusters.
     branchCount = 0
-    for b in branchList:
-        branchVals[b] = branchCount
-        branchCount += 5
-    extVals = {}
-    feCount = 0
-    for fe in fileExtensions:
-        extVals[fe] = feCount
-        feCount += 1
-    for f in fileList:
-        e = f.split('.')
+    for b in branchList:        #for each branch:
+        branchVals[b] = branchCount     #assign it a value.
+        branchCount += 50               #increment the value substantially.
+    #determine which files we will be evaluating.
+    extList = []    #make a new list for all valid file extensions
+    for fe in fileExtensions:   #find all valid extensions
+        extList.append(fe)   #put them in the list
+    for f in fileList:          #for every file we've found:
+        e = f.split('.')        #find its extension.
         ext = e[len(e)-1]
-        fileVals[f] = extVals[ext]
-        extVals[ext] += .05
-    commits = data.get('commits')
-    start = commits[len(commits)-1][1]
-    startDate_unformatted = start.split('T')[0]
-    startDate = convertDate(startDate_unformatted)
-    for d in dateList:
-        date = convertDate(d)
-        score = ((date[1] - startDate[1]) * 365) + (date[0] - startDate[0])
-        score = float(score) / 100
-        dateVals[d] = score
-    #print(branchVals)
-    #print(fileVals)
-    #print(dateVals)
+        if ext in extList:      #if that extension is in thelist
+            fileVals.append(f)  #add the file to the list of files we will evaluate.
+    #determine values for all the commit dates.
+    for d in dateList:          #for every date that a commit was made on
+        date = convertDate(d)   #convert it to the format from convertDate.
+        score = ((date[1] - startDate[1]) * 365) + (date[0] - startDate[0]) #calculate a score based on its location from the first commit's date.
+        score = float(score) / 100  #divide that score by an amount that will vary how important dates are.
+        dateVals[d] = score         #assign the value into the dateVals dict.
+    return
 
 def convertDate(date):
-    formatted = date.split('-')
+    #converts date as GitHub stores it into a useable format.
+    formatted = date.split('-') #splits it in the way that GitHub stores it.
     months = {'01': 0, '02': 31, '03': 59, '04': 90, '05': 120, '06': 151, '07': 181, '08': 212, '09': 243, '10': 273, '11': 304, '12':334}
-
-    fdate = [months[formatted[1]] + int(formatted[2]), int(formatted[0])]
-    return fdate
+    #each month has a value. We are ignoring leap years for the negligible difference it makes.
+    fdate = [months[formatted[1]] + int(formatted[2]), int(formatted[0])]   #the formatted date is [](day of year), (year)]
+    return fdate    #return the newly formatted date
 
 def calcContribution(data):
-    total_score = 0
+    #begin initialization
+    total_score = 0         #keep track of a total throughout all non-private users.
     total_commits = 0
     total_codeLines = 0
-    commits = data.get('commits')
-    comments = data.get('comments')
-    #print(users)
-    for user in users:
-        #print(user)
-        contDict[user] = 0
-        userLangs[user] = []
-        branches = {}
-        bCount = []
+    commits = data.get('commits')   #pull all commits out of our data
+    comments = data.get('comments') #pull all comments out of our data
+    for user in users:      #for each user:
+        contDict[user] = 0      #initialize their contribution to 0
+        userLangs[user] = []    #intiialize their languages to None
+        branches = {}           #initialize their branches to None
         statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches}
-        userFileCounts[user] = {'default' : 0}
-    branches = {}
+        #userFileCounts[user] = {'default' : 0}  #initialize statsDict and userFileCounts to empty.
+    branches = {}   #repeat the above process for a total user.
     bCount = []
     statsDict['-'] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches}
+    #end initialization
+    #begin languages for user
     for comm in commits:
-        if comm[4] not in branchList:
-            branchList.append(comm[4])
-        for f in comm[5]:
-            if f not in fileList:
-                fileList[f] = 0
-                ext = f.split('.')
-                if ext[len(ext) - 1] not in fileExtensions:
-                    fileExtensions.append(ext[len(ext)-1])
-        if comm[1].split('T')[0] not in dateList:
-            dateList.append(comm[1].split('T')[0])
-        userLogin = comm[0]
-        if (userLogin != 'Private User') and (userLogin != 'web-flow'):
-            filenames = comm[5]
-            if comm[3] > 9:
-                #getExtensions()
-                for f in filenames:
-                    #print(f)
+        userLogin = comm[0]     #find the user's username
+        if (userLogin != 'Private User') and (userLogin != 'web-flow'):     #assuming they aren't a private user:
+            filenames = comm[5]     #get a list of all the filenames
+            if comm[3] > 9:         #if they changed atleast 10 lines of code (that is, they made more than one small change)
+                for f in filenames:     #check each file:
                     extension = f.split('.')
-                    last = len(extension) - 1
-                    if extension[last] == 'py':
-                        if 'Python' not in userLangs[userLogin]:
-                            userLangs[userLogin].append('Python')
-                    elif extension[last] == 'js':
-                        if 'JavaScript' not in userLangs[userLogin]:
-                            userLangs[userLogin].append('JavaScript')
-                    elif extension[last] == 'html':
-                        if 'HTML' not in userLangs[userLogin]:
-                            userLangs[userLogin].append('HTML')
-            #print(userLogin)
-            score = (comm[3] / float(6))
-            total_score += score
-            existingScore = contDict.setdefault(userLogin, 0)
-            contDict[userLogin] = existingScore + score
-            statsDict[userLogin]['commitCount'] += 1
-            total_commits += 1
-            statsDict[userLogin]['codeLines'] += comm[3]
-            total_codeLines += comm[3]
-            if comm[4] not in statsDict[userLogin]['branches']:
-                statsDict[userLogin]['branches'].update({comm[4] : comm[3]})
-            else :
-                statsDict[userLogin]['branches'][comm[4]] += comm[3]
-            non_private_total_score = total_score
-    #print('hit it')
+                    e = extension[len(extension) - 1]   #obtain its file extension
+                    for fe in fileExtensions:           #check it versus every file extension in the database
+                        if e == fe[1]:                  #if it matches one
+                            if e not in userLangs[userLogin]:   #and it isn't already in the list
+                                userLangs[userLogin].append(fe[0])  #add the language to the user's list of languages.
+    #end languages for user
+    #begin contribution score & branches for user
+            score = (comm[3] / float(6))    #calculate a base score, being total lines of code divided by 6 (what we consider 1 small change)
+            total_score += score            #add this to the total score for the entire project.
+            existingScore = contDict.setdefault(userLogin, 0)   #set this var to their score, or create their score and set it to zero if it didn't exist.
+            contDict[userLogin] = existingScore + score         #add the new score to the existing score.
+            statsDict[userLogin]['commitCount'] += 1            #add to the commitcount of the user by 1.
+            total_commits += 1                                  #add to the total commits by 1.
+            statsDict[userLogin]['codeLines'] += comm[3]        #add to the user's total lines of code changed.
+            total_codeLines += comm[3]                          #add to the total amount of lines of code changed.
+            if comm[4] not in statsDict[userLogin]['branches']: #if this branch isn't already in the user's list of used branches:
+                statsDict[userLogin]['branches'].update({comm[4] : comm[3]})    #set the lines of code they've changed in that branch.
+            else :                                                 #if it was already there:
+                statsDict[userLogin]['branches'][comm[4]] += comm[3]    #add to the lines already there
+    #end contribution score & branches for user
+    #begin assigning scores
     for user in users:
-        temp = contDict[user]
-        cont_decimal = temp/float(non_private_total_score)
-        cont_percent = "{:.2f}".format(cont_decimal * 100)
-        #print(user)
-        #print(cont_percent)
-        contDict[user] = cont_percent
-    statsDict['-']['commitCount'] = total_commits
+        temp = contDict[user]   #grab the user's score
+        cont_decimal = temp/float(total_score)  #convert into a percentage (decimal)
+        cont_percent = "{:.2f}".format(cont_decimal * 100)  #convert into a percentage in format XX.XX - just add a %.
+        contDict[user] = cont_percent   #reassign it back into the list.
+    statsDict['-']['commitCount'] = total_commits   #assign the total user's values.
     statsDict['-']['codeLines'] = total_codeLines
     contDict['-'] = total_score
-    #print(fileList)
-    return 1;
-    #Create dictionary
-    #add each user and a list of ints (per) to the dictionary
-    #go through all commits, add to the appropriate list
-    #print(commits)
-    #print(users)
+    #end assigning scores
+    return 1;   #return.
 
 def getExtensions():
     mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='LanguageDB')
