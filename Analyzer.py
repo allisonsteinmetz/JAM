@@ -7,8 +7,7 @@ from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
 #import mysql.connector as mariadb
 import numpy as np
-from sklearn.cluster import AgglomerativeClustering as AC
-import matplotlib.pyplot as plt
+from sklearn.cluster import MeanShift, estimate_bandwidth
 import json
 import time
 
@@ -77,41 +76,57 @@ def calcTeams(data):
     for comm in commits:
         tempDict = {}
         branchvalue = branchVals[comm[4]]
+        found = False
         for f in fileVals:
             tempDict.update({f : 0})
         for f in comm[5]:
             if f in fileVals:
-                tempDict.update({f : (fileCount* 100000)})
-        datevalue = dateVals[comm[1].split('T')[0]]
-        commData = [branchvalue, datevalue]
-        for f in fileVals:
-            commData.append(tempDict[f])
-        analyzeThis.append(commData)
-        userNames.append(comm[0])
-        print(comm[0])
-        print(datevalue)
+                found = True
+                tempDict.update({f : (fileCount)})
         print(tempDict)
-
-    ac = AC(linkage="average")
-    ac.fit(analyzeThis)
-    labels = ac.labels_
-    #cluster_centers = ac.cluster_centers_
+        print("")
+        if found:
+            datevalue = dateVals[comm[1].split('T')[0]]
+            commData = [branchvalue, datevalue]
+            for f in fileVals:
+                commData.append(tempDict[f])
+            analyzeThis.append(commData)
+            userNames.append(comm[0])
+        #print(comm[0])
+        #print(datevalue)
+        #print(tempDict)
+    #bw = estimate_bandwidth(analyzeThis, quantile=0.2, n_samples=500)
+    ms = MeanShift(bandwidth=(fileCount * 1.4))
+    ms.fit(analyzeThis, y=None)
+    labels = ms.labels_
+    cluster_centers = ms.cluster_centers_
     n_clusters_ = len(np.unique(labels))
     print("Number of estimated clusters:", n_clusters_)
-
+    print(len(labels))
     i = 0
-    for a in analyzeThis :
-        #print(userNames[i])
-        #print(a[1])
-        print(labels[i])
+    testlist = []
+    for l in labels:
+        print(l)
+        if l != 0:
+            testlist.append(i)
         i += 1
+
+    for v in testlist:
+        tempitem = analyzeThis[v]
+        print(userNames[v])
+        print(commits[v][1])
+        print(tempitem[1])
+        print(tempitem[0])
+        print(labels[v])
+        print(tempitem)
+
 
 def assignVals(data):
     #assign values to branches. These are to be large enough that they are definitely in different clusters.
     branchCount = 0
     for b in branchList:        #for each branch:
         branchVals[b] = branchCount     #assign it a value.
-        branchCount += 50               #increment the value substantially.
+        branchCount += 500               #increment the value substantially.
     #determine which files we will be evaluating.
     extList = []    #make a new list for all valid file extensions
     for fe in fileExtensions:   #find all valid extensions
@@ -125,7 +140,7 @@ def assignVals(data):
     for d in dateList:          #for every date that a commit was made on
         date = convertDate(d)   #convert it to the format from convertDate.
         score = ((date[1] - startDate[1]) * 365) + (date[0] - startDate[0]) #calculate a score based on its location from the first commit's date.
-        score = float(score) / 100  #divide that score by an amount that will vary how important dates are.
+        score = float(score) / 10000000  #divide that score by an amount that will vary how important dates are.
         dateVals[d] = score         #assign the value into the dateVals dict.
     return
 
