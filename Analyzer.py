@@ -21,11 +21,13 @@ statsDict = {}      #holds the statistics about each user. These are generally f
 branchList = []     #holds a list of all branches, for use in multiple parts of the analyzer.
 fileList = []       #holds a list of all the files with valid extensions. For use in calcTeams.
 dateList = []       #holds a list of all dates that commits were made on. For use in assignVals.
+userTeamList = []   #holds a list of all users to be considered as on teams.
 global fileExtensions #holds a list of all valid file extensions. Pulled from the database. For use in calcTeams.
 fileVals = []       #holds a list of all files which we will be using binary values for. For use in calcTeams.
 startDate = []      #holds the date that the first commit was made on. For use in assignVals.
 dateVals = {}       #holds a list of values for all the dates that commits were made on. For use in calcTeams.
 branchVals = {}     #holds a list of values for branches. Branch values are enough to guarantee different clusters. used in calcTeams.
+userTeams = {}      #holds a dictionary of lists (one entry per user), containing the information for which teammates each user has.
 global users        #will hold a list of all users.
 
 def analyzeData(name, data):
@@ -34,16 +36,28 @@ def analyzeData(name, data):
     users = data.get('users')   #get a list of all users from our pull.
     makeLists(data)             #make a list of all branches, files, and dates that commits were made on.
     calcContribution(data)      #calculate contribution for each user.
+    determineValidTeamUsers()   #determine which users have contributed enough to be considered for teams
     assignVals(data)            #assign values to branches and dates for use in clustering.
     calcTeams(data)             #calculate which user work with what other users.
     for user in users:          #for each user, package the data in a way that can be easily parsed on return.
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
-            'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' : statsDict.get(user)}
+            'teams': userTeams.get(user), 'leadership': 'WIP', 'uniqueStats' : statsDict.get(user)}
         userStats.append(tempDict)  #and add that data to the return data.
 #    storePostAnalysisData(name, userStats)     #store the data to the database in a post-analyzed form.
-    tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': 'WIP', 'leadership': 'WIP', 'uniqueStats' :statsDict.get('-')}
+    tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': userTeams.get('-'), 'leadership': 'WIP', 'uniqueStats' :statsDict.get('-')}
     userStats.append(tempDict)  #store a "total" user. Name '-' cannot be used in GitHub.
     return userStats    #return the data.
+
+def determineValidTeamUsers():
+    userCount = float(len(contDict) - 1)    #a count of all users on the project. -1 is to remove the total user.
+    threshhold = (100 / userCount) / 3      #calculate a threshhold, of equal split divided by 3 (a third of equal responsibility)
+    for c in contDict:          #for each user:
+        if c is '-':            #skip if it's the total User
+            continue
+        contValue = float(contDict[c])  #otherwise grab their value (and convert from string to float)
+        if contValue >= threshhold:     #if they contriuted more than the threshhold
+            userTeamList.append(c)      #add them to the list we will find team members for.
+    return
 
 def makeLists(data):
     #call the database get function here instead
@@ -61,64 +75,112 @@ def makeLists(data):
         tempdate = comm[1].split('T')[0]
         if tempdate not in dateList:    #for new dates, not already in the list.
             dateList.append(tempdate)
-    start = commits[len(commits)-1][1]
+    start = commits[len(commits)-1][1]  #Format the date of the first commit
     startDate_unformatted = start.split('T')[0]
     startDate_formatted = convertDate(startDate_unformatted)
     startDate.append(startDate_formatted[0])
-    startDate.append(startDate_formatted[1])
+    startDate.append(startDate_formatted[1])    #store it into the global variable
     return
 
 def calcTeams(data):
-    commits = data.get('commits')
-    userNames = []
-    analyzeThis = []
-    fileCount = len(fileVals)
-    for comm in commits:
-        tempDict = {}
-        branchvalue = branchVals[comm[4]]
-        found = False
-        for f in fileVals:
-            tempDict.update({f : 0})
-        for f in comm[5]:
-            if f in fileVals:
-                found = True
-                tempDict.update({f : (fileCount)})
-        print(tempDict)
-        print("")
-        if found:
-            datevalue = dateVals[comm[1].split('T')[0]]
-            commData = [branchvalue, datevalue]
-            for f in fileVals:
+    commits = data.get('commits')   #grab all the commits
+    userNames = []                  #holds the users involved with each commit
+    codeLines = []                  #holds the lines of code involved with each commit
+    analyzeThis = []                #holds the data to be passed into the clustering algorithm
+    fileCount = len(fileVals)       #count the total number of files
+    for comm in commits:            #for each commit:
+        if comm[0] not in userTeamList:
+            continue
+        tempDict = {}               #create a temporary dictionary, which will hold the files.
+        found = False               #tells us if any valid file was on this commit (thus avoiding useless commits)
+        for f in fileVals:          #for each file in the list
+            tempDict.update({f : 0})    #add it to the dictionary, set its value to 0 (meaning not used)
+        for f in comm[5]:           #for each file in this commit
+            if f in fileVals:       #if it is in the list
+                found = True        #mark found as true (not a useless commit)
+                tempDict.update({f : (fileCount)})  #update the dictionary value for that file
+        if found:                   #if this commit isn't useless:
+            branchvalue = branchVals[comm[4]]   #grab the branch value
+            datevalue = dateVals[comm[1].split('T')[0]] #grab the datevalue
+            commData = [branchvalue, datevalue]         #assign them both to an array
+            for f in fileVals:                          #append the value of each file into the array
                 commData.append(tempDict[f])
-            analyzeThis.append(commData)
-            userNames.append(comm[0])
-        #print(comm[0])
-        #print(datevalue)
-        #print(tempDict)
-    #bw = estimate_bandwidth(analyzeThis, quantile=0.2, n_samples=500)
-    ms = MeanShift(bandwidth=(fileCount * 1.4))
+            analyzeThis.append(commData)                #add this array (for the commit) into the array of arrays (data to be clustered)
+            userNames.append(comm[0])                   #add the appropriate user to the userlist under the same index.
+            codeLines.append(comm[3])                   #add the appropriate lines of code to the codeLine array under the same index.
+    ms = MeanShift(bandwidth=(fileCount * 1.4))         #Cluster the data.
     ms.fit(analyzeThis, y=None)
     labels = ms.labels_
     cluster_centers = ms.cluster_centers_
     n_clusters_ = len(np.unique(labels))
-    print("Number of estimated clusters:", n_clusters_)
-    print(len(labels))
-    i = 0
-    testlist = []
-    for l in labels:
-        print(l)
-        if l != 0:
-            testlist.append(i)
-        i += 1
 
-    for v in testlist:
-        tempitem = analyzeThis[v]
-        print(userNames[v])
-        print(commits[v][1])
-        print(tempitem[1])
-        print(tempitem[0])
-        print(labels[v])
-        print(tempitem)
+    #CLUSTERING TEST CODE:
+    #print("Number of estimated clusters:", n_clusters_)
+    #print(len(labels))
+    #i = 0
+    #testlist = []
+    #for l in labels:
+    #    print(l)
+    #    if l != 0:
+    #        testlist.append(i)
+    #    i += 1
+    #for v in testlist:
+    #    tempitem = analyzeThis[v]
+    #    print(userNames[v])
+    #    print(commits[v][1])
+    #    print(tempitem[1])
+    #    print(tempitem[0])
+    #    print(labels[v])
+    #    print(tempitem)
+    #END CLUSTERING TEST CODE
+
+    userFileBreakdown = {}      #create a dictionary that's going to hold values for each file.. for each user.
+    #Create dictionary entries for each user being examined for teammates
+    for user in np.unique(userNames):       #for each (unique) user:
+        tempDict = {}                       #create a dictionary for them
+        for l in np.unique(labels):         #for each cluster:
+            tempDict[l] = 0                 #make that cluster has a zero score in that dictionary
+        tempDict['t'] = 0                   #add a total entry
+        userFileBreakdown[user] = tempDict  #add the dictionary to the userFileBreakdown under the user's key
+    i = 0   #used for accessing the correct index items
+    #for each commit, add its total lines of code to the appropriate user and cluster.
+    for l in labels:    #for each commit:
+        name = userNames[i]     #grab the associated user
+        lines = codeLines[i]    #grab the associate lines of code
+        userFileBreakdown[(name)][l] += lines   #set the proper variable in the dictionary
+        userFileBreakdown[(name)]['t'] += lines #also add to the total
+        i += 1                                  #increment i
+    #convert all the above values into percentages.
+    for user in userFileBreakdown:              #for each key in the userFileBreakdown:
+        total = userFileBreakdown[user]['t']    #grab the total
+        for l in userFileBreakdown[user]:       #for each cluster, convert the value to a XX.XX percent
+            lines = userFileBreakdown[user][l]
+            percent = lines / float(total)
+            percent_formatted = "{:.2f}".format(percent)
+            userFileBreakdown[user][l] = float(percent_formatted)
+    commonality_threshhold = 1 / ((len(contDict) - 1) * 2)  #determine a threshhold percentage that users must share to be considered teammates
+    #determine teammates for each user
+    for user in userFileBreakdown:  #grab a user from the list
+        teammate_list = []          #initialize a list of their teamates.
+        for user_iter in userFileBreakdown: #for each user in the list
+            common = 0  #value used for determining similarities in their commits
+            if user is user_iter:   #if the user is the same user, disregard them.
+                continue
+            for l in userFileBreakdown[user]:   #for each cluster:
+                my_p = userFileBreakdown[user][l]   #grab the user's percentage.
+                ur_p = userFileBreakdown[user_iter][l]  #grab the user we're comparing's percentage.
+                same = min(my_p, ur_p)  #find out how much overlap they have
+                common += same          #add the overlap value to the common variable
+            if common >= commonality_threshhold:    #if they have enough in common
+                teammate_list.append(user_iter)     #add that user to their teammate list
+        userTeams[user] = teammate_list             #add this user's teammate list to the overarching dictionary
+    for user in contDict:       #for each user
+        if user in userTeams:   # if they DO have an entry in the teammate dictionary (Python is being stupid)
+            something = 'if statements have to have something'  #then filler data cuz it doesn't matter
+        else:   #if they DON'T (the important one)
+            no = 'No Teammates' #set a variable
+            userTeams[user] = no    #assign the value in the dictionary, so there is data there to reference.
+
 
 
 def assignVals(data):
