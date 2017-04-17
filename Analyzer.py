@@ -5,7 +5,7 @@
 
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
-#import mysql.connector as mariadb
+import mysql.connector as mariadb
 import numpy as np
 from sklearn.cluster import MeanShift, estimate_bandwidth
 import json

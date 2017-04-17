@@ -1,7 +1,7 @@
 from agithub.GitHub import GitHub
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
-#import mysql.connector as mariadb
+import mysql.connector as mariadb
 import json
 import time
 
@@ -24,7 +24,7 @@ def getProjectData(g, name):
     global passed
     passed = True
     returnData = {'users': list(userList), 'repoLanguages': repoLanguages, 'commits': commitList, 'comments':commentList, 'merge': 'WIP'}
-#    storePreAnalysisData(name, returnData)
+    storePreAnalysisData(name, returnData)
     return returnData
 
 def getOrganizationData(g, name):

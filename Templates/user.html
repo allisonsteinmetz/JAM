@@ -87,28 +87,30 @@
                 chart.draw(data, options);
             }
             function numCommentsChart() {
-                var data = google.visualization.arrayToDataTable([
-                    ['User', 'Num of Comments'],
-                    ['User', 1],
-                    ['Other Contributors', 0]
-                ]);
+                if({{ totalData['uniqueStats']['commentCount'] }} != 0){
+                  var data = google.visualization.arrayToDataTable([
+                      ['User', 'Num of Comments'],
+                      ['User', {{ userData['uniqueStats']['commentCount'] }}],
+                      ['Other Contributors', ({{ totalData['uniqueStats']['commentCount'] }} - {{ userData['uniqueStats']['commentCount'] }})]
+                  ]);
 
-                var options = {
-                    legend: 'none',
-                    backgroundColor: 'transparent',
-                    pieSliceTextStyle: {
-                      color: 'white',
-                      fontSize:14
-                    },
-                    colors: ['#10872b', '#61996e'],
-                    tooltip: { textStyle: { fontSize: 12 } },
-                    width: 225,
-                    height: 200,
-                    chartArea: {'width': '80%', 'height': '80%'}
-                };
+                  var options = {
+                      legend: 'none',
+                      backgroundColor: 'transparent',
+                      pieSliceTextStyle: {
+                        color: 'white',
+                        fontSize:14
+                      },
+                      colors: ['#10872b', '#61996e'],
+                      tooltip: { textStyle: { fontSize: 12 } },
+                      width: 225,
+                      height: 200,
+                      chartArea: {'width': '80%', 'height': '80%'}
+                  };
 
-                var chart = new google.visualization.PieChart(document.getElementById('commentsChart'));
-                chart.draw(data, options);
+                  var chart = new google.visualization.PieChart(document.getElementById('commentsChart'));
+                  chart.draw(data, options);
+                }
             }
         </script>
     </head>
@@ -156,12 +158,12 @@
                         {{ userData['uniqueStats']['commitCount'] }}</p>
                     <p>Lines of Code:
                         {{ userData['uniqueStats']['codeLines'] }}</p>
-                    <p>Lines of Code accepted: 19,782</p>
+                    <p>Lines of Code accepted: {{ userData['uniqueStats']['acceptedLines'] }}</p>
                 </div>
                 <div class="column-right">
-                    <p>Commits accepted: 279</p>
+                    <p>Commits accepted: {{ userData['uniqueStats']['acceptedCommits'] }}</p>
                     <p>Major Contribution Branches: 3</p>
-                    <p>Number of Comments: 32</p>
+                    <p>Number of Comments: {{ userData['uniqueStats']['commentCount'] }}</p>
                 </div>
             </div>
             <div class="infoDiv" id="leadershipDiv">
@@ -172,11 +174,11 @@
                 </div>
                 <div class="column-center">
                     <p>Branches Merged: 0</p>
-                    <p>Branches Led: 1</p>
+                    <p>Branches Led: {{ userData['uniqueStats']['branchesLed'] }}</p>
                 </div>
                 <div class="column-right">
                     <p>Files Created: 21</p>
-                    <p>Files Led: 17</p>
+                    <p>Files Led: {{ userData['uniqueStats']['filesLed'] }}</p>
                 </div>
             </div>
             <div class="infoDiv" id="skillsDiv">
@@ -185,7 +187,7 @@
             </div>
             <div class="infoDiv" id="teamsDiv">
                 <h2 class="infoTitle">Teams</h2>
-                <h3 id="info">{{ userData['teams'] }}</h3>
+                <h3 id="info" class="teams">{{ userData['teams'] }}</h3>
             </div>
         </div>
         <div id="contributionSpecDiv" class="infoDiv" style="display: none;">
@@ -213,12 +215,12 @@
                           {{ userData['uniqueStats']['commitCount'] }}</p>
                       <p>Lines of Code:
                           {{ userData['uniqueStats']['codeLines'] }}</p>
-                      <p>Lines of Code accepted: 19,782</p>
+                      <p>Lines of Code accepted: {{ userData['uniqueStats']['acceptedLines'] }}</p>
                   </div>
                   <div class="column-right">
-                      <p>Commits accepted: 279</p>
+                      <p>Commits accepted: {{ userData['uniqueStats']['acceptedCommits'] }}</p>
                       <p>Major Contribution Branches: 3</p>
-                      <p>Number of Comments: 32</p>
+                      <p>Number of Comments: {{ userData['uniqueStats']['commentCount'] }}</p>
                   </div>
               </div>
             </div>
@@ -233,11 +235,11 @@
                   </div>
                   <div class="column-center">
                       <p>Branches Merged: 0</p>
-                      <p>Branches Led: 1</p>
+                      <p>Branches Led: {{ userData['uniqueStats']['branchesLed'] }}</p>
                   </div>
                   <div class="column-right">
                       <p>Files Created: 21</p>
-                      <p>Files Led: 17</p>
+                      <p>Files Led: {{ userData['uniqueStats']['filesLed'] }}</p>
                   </div>
               </div>
             </div>

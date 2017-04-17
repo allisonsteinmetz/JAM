@@ -6,4 +6,10 @@ function fixFormatting()
     langs = userLangs.innerHTML
     userLangs.innerHTML = langs.replace(/'|'/gi, '').replace('[', '').replace(']', '');
   }
+  teams = document.getElementsByClassName("teams");
+  for(i = 0; i < teams.length; i++){
+    userTeams = teams[i];
+    unformattedTeams = userTeams.innerHTML
+    userTeams.innerHTML = unformattedTeams.replace(/'|'/gi, '').replace('[u', '').replace(']', '');
+  }
 }
