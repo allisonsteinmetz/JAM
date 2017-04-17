@@ -1,6 +1,6 @@
 from Authenticator import authenticate
 from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
-from Analyzer import analyzeData, trainData
+from Analyzer import analyzeData
 #import numpy as np
 #from sklearn.cluster import MeanShift
 #import matplotlib.pyplot as plt
@@ -46,6 +46,7 @@ if __name__ == '__main__':
         print(user.get('uniqueStats').get('commitCount'))
         print(user.get('uniqueStats').get('codeLines'))
         branches = user.get('uniqueStats').get('branches')
+        print(user.get('languages'))
         for branch in branches:
             print(branch)
             print(branches[branch])

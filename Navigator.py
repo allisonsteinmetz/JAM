@@ -5,7 +5,7 @@ from flask import Flask, render_template, url_for,  redirect, request, json
 from flask import make_response
 from Authenticator import authenticate
 from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
-from Analyzer import analyzeData, trainData
+from Analyzer import analyzeData
 from SearchController import getOrganizations, getProjects
 # import mysql.connector as mariadb
 # import json

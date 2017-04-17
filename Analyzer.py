@@ -28,6 +28,9 @@ startDate = []      #holds the date that the first commit was made on. For use i
 dateVals = {}       #holds a list of values for all the dates that commits were made on. For use in calcTeams.
 branchVals = {}     #holds a list of values for branches. Branch values are enough to guarantee different clusters. used in calcTeams.
 userTeams = {}      #holds a dictionary of lists (one entry per user), containing the information for which teammates each user has.
+fileLeaders = {}    #holds a dictionary which contains an entry for each valid file (held in fileList), with each entry holding a dictionary, an entry for each user.
+branchLeaders = {}  #same format as fileLeaders, except for branches instead of files.
+userLeadership = {} #holds a score for each user related to their leadership abilities.
 global users        #will hold a list of all users.
 
 def analyzeData(name, data):
@@ -39,12 +42,13 @@ def analyzeData(name, data):
     determineValidTeamUsers()   #determine which users have contributed enough to be considered for teams
     assignVals(data)            #assign values to branches and dates for use in clustering.
     calcTeams(data)             #calculate which user work with what other users.
+    calcLeadership()            #calculate which users led the most by way of branches and files led (most commits to them)
     for user in users:          #for each user, package the data in a way that can be easily parsed on return.
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
-            'teams': userTeams.get(user), 'leadership': 'WIP', 'uniqueStats' : statsDict.get(user)}
+            'teams': userTeams.get(user), 'leadership': userLeadership.get(user), 'uniqueStats' : statsDict.get(user)}
         userStats.append(tempDict)  #and add that data to the return data.
 #    storePostAnalysisData(name, userStats)     #store the data to the database in a post-analyzed form.
-    tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': userTeams.get('-'), 'leadership': 'WIP', 'uniqueStats' :statsDict.get('-')}
+    tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': userTeams.get('-'), 'leadership': '10.00', 'uniqueStats' :statsDict.get('-')}
     userStats.append(tempDict)  #store a "total" user. Name '-' cannot be used in GitHub.
     return userStats    #return the data.
 
@@ -75,12 +79,93 @@ def makeLists(data):
         tempdate = comm[1].split('T')[0]
         if tempdate not in dateList:    #for new dates, not already in the list.
             dateList.append(tempdate)
+    #determine which files we will be evaluating.
+    extList = []    #make a new list for all valid file extensions
+    for fe in fileExtensions:   #find all valid extensions
+        extList.append(fe)   #put them in the list
+    for f in fileList:          #for every file we've found:
+        e = f.split('.')        #find its extension.
+        ext = e[len(e)-1]
+        if ext in extList:      #if that extension is in thelist
+            fileVals.append(f)  #add the file to the list of files we will evaluate.
+
     start = commits[len(commits)-1][1]  #Format the date of the first commit
     startDate_unformatted = start.split('T')[0]
     startDate_formatted = convertDate(startDate_unformatted)
     startDate.append(startDate_formatted[0])
     startDate.append(startDate_formatted[1])    #store it into the global variable
+    for f in fileVals:
+        fileLeaders[f] = {}
+        for user in users:
+            fileLeaders[f][user] = 0
+    for b in branchList:
+        branchLeaders[b] = {}
+        for user in users:
+            branchLeaders[b][user] = 0
+    for user in users:
+        userLeadership[user] = 0
     return
+
+def calcLeadership():
+    for b in branchLeaders:     #for each branch:
+        currentuserval = 0      #set a default, max value and name
+        currentusername = 'none'
+        for user in branchLeaders[b]:   #compare that to each user:
+            nextuserval = branchLeaders[b][user]
+            if nextuserval > currentuserval:    #if the user we're comparing to is higher:
+                currentuserval = nextuserval    #change the max to be them.
+                currentusername = user
+            elif nextuserval == currentuserval: #if they tie:
+                temp = '-' + currentusername + '.' + user   #add them to the list of leaders.
+                currentusername = temp
+        if b == 'master':   #assign branch score values. Master is worth more as it is generally more important.
+            score = 5
+        else:
+            score = 3
+        if currentusername[0] is '-':   #if there are multiple leaders on a branch:
+            names = currentusername.split('.')  #split them into readable names
+            names[0] = names[0][1:]
+            for n in names:
+                userLeadership[n] += (score / float(len(names)))   #assign an adjusted score based on sharing
+                statsDict[n]['branchesLed'] += 1            #keep track of this for unique statistics
+        else:
+            userLeadership[currentusername] += score    #otherwise just assign the regular score.
+    for f in fileLeaders:   #for each file:
+        currentuserval = 0  #set a default, max value and name
+        currentusername = 'none'
+        for user in fileLeaders[f]:     #compare that to each user:
+            nextuserval = fileLeaders[f][user]
+            if nextuserval > currentuserval:    #if the user we're comparing to is higher:
+                currentuserval = nextuserval    #change the max to be them.
+                currentusername = user
+            elif nextuserval == currentuserval: #if they tie:
+                temp = '-' + currentusername + '.' + user   #add them to the list of leaders.
+                currentusername = temp
+        if currentusername[0] is '-':   #if there are multiple leaders on the file:
+            names = currentusername.split('.')  #split them into readable names
+            names[0] = names[0][1:]
+            if names[0] is 'none':
+                names.remove('none')
+            for n in names:
+                userLeadership[n] += (1 / float(len(names)))   #assign an adjusted score based on sharing
+                statsDict[n]['filesLed'] += 1       #keep track of this for unique statistics
+        else:
+            userLeadership[currentusername] += 1    #otherwise just assign 1
+
+    max_leader = 0      #set a variable to keep track of the max points
+    for user in userLeadership: #check each user's points
+        if userLeadership[user] > max_leader:
+            max_leader = userLeadership[user]   #set a new max if they're better
+
+    for user in userLeadership:     #change numbers into leadership ratings.
+        user_score = userLeadership[user]
+        user_percent = user_score / float(max_leader)
+        user_rating = user_percent * 10
+        user_rating_formatted = "{:.2f}".format(user_rating)
+        userLeadership[user] = user_rating_formatted
+
+    return
+
 
 def calcTeams(data):
     commits = data.get('commits')   #grab all the commits
@@ -189,15 +274,6 @@ def assignVals(data):
     for b in branchList:        #for each branch:
         branchVals[b] = branchCount     #assign it a value.
         branchCount += 500               #increment the value substantially.
-    #determine which files we will be evaluating.
-    extList = []    #make a new list for all valid file extensions
-    for fe in fileExtensions:   #find all valid extensions
-        extList.append(fe)   #put them in the list
-    for f in fileList:          #for every file we've found:
-        e = f.split('.')        #find its extension.
-        ext = e[len(e)-1]
-        if ext in extList:      #if that extension is in thelist
-            fileVals.append(f)  #add the file to the list of files we will evaluate.
     #determine values for all the commit dates.
     for d in dateList:          #for every date that a commit was made on
         date = convertDate(d)   #convert it to the format from convertDate.
@@ -225,11 +301,11 @@ def calcContribution(data):
         contDict[user] = 0      #initialize their contribution to 0
         userLangs[user] = []    #intiialize their languages to None
         branches = {}           #initialize their branches to None
-        statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches}
+        statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches, 'filesLed' : 0, 'branchesLed' : 0}
         #userFileCounts[user] = {'default' : 0}  #initialize statsDict and userFileCounts to empty.
     branches = {}   #repeat the above process for a total user.
     bCount = []
-    statsDict['-'] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches}
+    statsDict['-'] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches, 'filesLed' : 0, 'branchesLed' : 0}
     #end initialization
     #begin languages for user
     for comm in commits:
@@ -238,12 +314,13 @@ def calcContribution(data):
             filenames = comm[5]     #get a list of all the filenames
             if comm[3] > 9:         #if they changed atleast 10 lines of code (that is, they made more than one small change)
                 for f in filenames:     #check each file:
+                    if f in fileVals:                   #if this is a file we keep track of:
+                        fileLeaders[f][userLogin] += 1  #add to the total number of commits to this file this user has made.
                     extension = f.split('.')
                     e = extension[len(extension) - 1]   #obtain its file extension
-                    for fe in fileExtensions:           #check it versus every file extension in the database
-                        if e == fe[1]:                  #if it matches one
-                            if e not in userLangs[userLogin]:   #and it isn't already in the list
-                                userLangs[userLogin].append(fe[0])  #add the language to the user's list of languages.
+                    if e in fileExtensions:                  #if it matches one
+                        if fileExtensions[e] not in userLangs[userLogin]:   #and it isn't already in the list
+                            userLangs[userLogin].append(fileExtensions[e])  #add the language to the user's list of languages.
     #end languages for user
     #begin contribution score & branches for user
             score = (comm[3] / float(6))    #calculate a base score, being total lines of code divided by 6 (what we consider 1 small change)
@@ -254,6 +331,7 @@ def calcContribution(data):
             total_commits += 1                                  #add to the total commits by 1.
             statsDict[userLogin]['codeLines'] += comm[3]        #add to the user's total lines of code changed.
             total_codeLines += comm[3]                          #add to the total amount of lines of code changed.
+            branchLeaders[comm[4]][userLogin] += 1              #add to the total number of commits to this branch this user has made.
             if comm[4] not in statsDict[userLogin]['branches']: #if this branch isn't already in the user's list of used branches:
                 statsDict[userLogin]['branches'].update({comm[4] : comm[3]})    #set the lines of code they've changed in that branch.
             else :                                                 #if it was already there:
@@ -282,46 +360,6 @@ def getExtensions():
     result = cursor.fetchall()
     print(result)
     return result;
-
-
-def searchWords(data):
-    #this is what will end up using scikit
-    #vocabulary = "tests python javascript html test testing repositories".split()
-    #vect = TfidfVectorizer(sublinear_tf=True, max_df=0.5, analyzer='word',
-    #       stop_words='english', vocabulary=vocabulary, input='content')
-    #analyzedData = vect.fit_transform(data).toarray()
-    #print(analyzedData)
-
-    vocab = ['alli', 'github', 'josh', 'flask', 'the']
-    vectorizer = CountVectorizer(min_df=1, vocabulary = vocab)
-    x = vectorizer.fit_transform(data)
-    analyzedData = x.toarray()
-    print(analyzedData)
-    print(vectorizer.get_feature_names())
-    return analyzedData
-
-def trainData(data):
-    #this is going to be training the system
-    #load in a file named after a programming language
-    #file will be formatted as such:
-    #alli pointed out we may be able to look at the file name. I will be looking into this soon.
-    #GUARANTEED:
-    #word, word, word...
-    #etc.
-    #ACCEPTED:
-    #word, word, word, word, word, word...
-    #word, word, word, word, word, word...
-    #etc.
-    #UNACCEPTED:
-    #word, word...
-    #etc.
-    #accepted words make the code think it was that programming language. unacceppted words automatically
-    #throw out the language as an option (meaning either they aren't programming in it, or they do not know
-    #the language well enough to know that it doesn't exist in that language)
-    if worked:
-        return true
-    else:
-        return false
 
 def storePostAnalysisData(repoName, data):
     mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='postAnalyzedDB')
