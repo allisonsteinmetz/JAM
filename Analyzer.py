@@ -1,8 +1,3 @@
-#IF THIS CODE DOESN'T WORK RIGHT NOW:
-#comment out the "import matplotlib.pyplot as plt"
-#comment out the calling of calcTeams
-#should then work again
-
 from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
 import mysql.connector as mariadb
@@ -47,7 +42,7 @@ def analyzeData(name, data):
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': userTeams.get(user), 'leadership': userLeadership.get(user), 'uniqueStats' : statsDict.get(user)}
         userStats.append(tempDict)  #and add that data to the return data.
-#    storePostAnalysisData(name, userStats)     #store the data to the database in a post-analyzed form.
+    storePostAnalysisData(name, userStats)     #store the data to the database in a post-analyzed form.
     tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': userTeams.get('-'), 'leadership': '10.00', 'uniqueStats' :statsDict.get('-')}
     userStats.append(tempDict)  #store a "total" user. Name '-' cannot be used in GitHub.
     return userStats    #return the data.
