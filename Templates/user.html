@@ -87,7 +87,6 @@
                 chart.draw(data, options);
             }
             function numCommentsChart() {
-                if({{ totalData['uniqueStats']['commentCount'] }} != 0){
                   var data = google.visualization.arrayToDataTable([
                       ['User', 'Num of Comments'],
                       ['User', {{ userData['uniqueStats']['commentCount'] }}],
@@ -110,7 +109,54 @@
 
                   var chart = new google.visualization.PieChart(document.getElementById('commentsChart'));
                   chart.draw(data, options);
-                }
+            }
+            function filesCreatedChart() {
+                  var data = google.visualization.arrayToDataTable([
+                      ['User', 'Files Created'],
+                      ['User', 15],
+                      ['Other Contributors', 12]
+                  ]);
+
+                  var options = {
+                      legend: 'none',
+                      backgroundColor: 'transparent',
+                      pieSliceTextStyle: {
+                        color: 'white',
+                        fontSize:14
+                      },
+                      colors: ['#a00400', '#A96363'],
+                      tooltip: { textStyle: { fontSize: 12 } },
+                      width: 225,
+                      height: 200,
+                      chartArea: {'width': '80%', 'height': '80%'}
+                  };
+
+                  var chart = new google.visualization.PieChart(document.getElementById('filesCreated'));
+                  chart.draw(data, options);
+            }
+            function filesLedChart() {
+                  var data = google.visualization.arrayToDataTable([
+                      ['User', 'Files Led'],
+                      ['User', {{ userData['uniqueStats']['filesLed'] }}],
+                      ['Other Contributors', 12]
+                  ]);
+
+                  var options = {
+                      legend: 'none',
+                      backgroundColor: 'transparent',
+                      pieSliceTextStyle: {
+                        color: 'white',
+                        fontSize:14
+                      },
+                      colors: ['#10872b', '#61996e'],
+                      tooltip: { textStyle: { fontSize: 12 } },
+                      width: 225,
+                      height: 200,
+                      chartArea: {'width': '80%', 'height': '80%'}
+                  };
+
+                  var chart = new google.visualization.PieChart(document.getElementById('filesLed'));
+                  chart.draw(data, options);
             }
         </script>
     </head>
@@ -158,10 +204,10 @@
                         {{ userData['uniqueStats']['commitCount'] }}</p>
                     <p>Lines of Code:
                         {{ userData['uniqueStats']['codeLines'] }}</p>
-                    <p>Lines of Code accepted: {{ userData['uniqueStats']['acceptedLines'] }}</p>
+                    <p>Lines of Code accepted: {{ userData['uniqueStats']['codeLines'] }}</p>
                 </div>
                 <div class="column-right">
-                    <p>Commits accepted: {{ userData['uniqueStats']['acceptedCommits'] }}</p>
+                    <p>Commits accepted: {{ userData['uniqueStats']['commitCount'] }}</p>
                     <p>Major Contribution Branches: 3</p>
                     <p>Number of Comments: {{ userData['uniqueStats']['commentCount'] }}</p>
                 </div>
@@ -215,10 +261,10 @@
                           {{ userData['uniqueStats']['commitCount'] }}</p>
                       <p>Lines of Code:
                           {{ userData['uniqueStats']['codeLines'] }}</p>
-                      <p>Lines of Code accepted: {{ userData['uniqueStats']['acceptedLines'] }}</p>
+                      <p>Lines of Code accepted: {{ userData['uniqueStats']['codeLines'] }}</p>
                   </div>
                   <div class="column-right">
-                      <p>Commits accepted: {{ userData['uniqueStats']['acceptedCommits'] }}</p>
+                      <p>Commits accepted: {{ userData['uniqueStats']['commitCount'] }}</p>
                       <p>Major Contribution Branches: 3</p>
                       <p>Number of Comments: {{ userData['uniqueStats']['commentCount'] }}</p>
                   </div>
@@ -228,6 +274,14 @@
         <div id="leadershipSpecDiv" class="infoDiv"style="display: none;">
             <div class="infoDiv" style="background-color:#ededed">
               <h2 class="infoTitle">Leadership</h2>
+              <div class="chartDiv" style="float: left; width: 490px;">
+                <h3 style="text-align: center">Files Created</h3>
+                <div id="filesCreated" style="width: 225px; height: 200px; margin: 0 auto;"></div>
+              </div>
+              <div class="chartDiv" style="display: inline-block; width: 490px;">
+                <h3 style="text-align: center">Files Led</h3>
+                <div id="filesLed" style="width: 225px; height: 200px; margin: 0 auto;"></div>
+              </div>
               <div class="infoDiv" style="background-color:#8c8c8c">
                   <div class="column-left">
                       <h3 id="info">Overall:
@@ -251,6 +305,8 @@
             google.charts.setOnLoadCallback(linesOfCodeChart);
             google.charts.setOnLoadCallback(numCommitsChart);
             google.charts.setOnLoadCallback(numCommentsChart);
+            google.charts.setOnLoadCallback(filesCreatedChart);
+            google.charts.setOnLoadCallback(filesLedChart);
 
             var select = document.getElementById("userSelect");
             select.value = "{{ userData['userLogin'] }}";
