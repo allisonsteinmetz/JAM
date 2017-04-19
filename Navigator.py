@@ -7,12 +7,7 @@ from Authenticator import authenticate
 from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
 from Analyzer import analyzeData
 from SearchController import getOrganizations, getProjects
-# import mysql.connector as mariadb
-# import json
 import time
-
-#now = time.strftime("%c")
-#print "Current date & time " + time.strftime("%c")
 
 
 app = Flask(__name__)
@@ -87,31 +82,9 @@ def users():
 def showUserInfo(username, index):
     return render_template('user.html', projectName = projName, userData = usersData[int(index) - 1], totalData = totalData, data = usersData)
 
-@app.route('/teaminfo/<projname>/<teamnumber>')
-def showTeam(number):
-    return render_template('team_information.html')
-    #show the team #(number)'s stats.
-
-@app.route('/leadershipinfo/<username>')
-def showLeadership(name):
-    return render_template('leadership_information.html')
-    #shows a specific user's leadership info
-
-@app.route('/contributioninfo/<username>')
-def showContribution(name):
-    return render_template('contribution_information.html')
-    #shows a specific user's contribution info
-
-#SUCCESS EXISTS PURELY FOR TESTING PURPOSES WHILE THE PROJECT IS IN DEVELOPMENT
-@app.route('/success/<data>')
-def success(data):
-    return render_template('login_success.html', output=data) #calls the success.html page and feeds it the userlist as an argument
-
 def trainSystem(data):
     #contact the analyzer for training
     return None
-
-#smariadb_connection.close()
 
 #debug gives you information if a page fails to load.
 #port number is your choice - I had to keep changing it to avoid caching (I think?) errors.
