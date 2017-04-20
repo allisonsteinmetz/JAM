@@ -14,5 +14,9 @@ password = browser.find_element_by_name('pwd') # Find the password box
 password.send_keys(real_pass + Keys.RETURN)
 
 searchbar = browser.find_element_by_name('searchKey')
-searchbar.send_keys('agithub')
+searchbar.send_keys('allisonsteinmetz/JAM')
 browser.find_element_by_id('searchButton').click()
+
+browser.implicitly_wait(20)
+elem = browser.find_element_by_id('allisonsteinmetz/JAM')
+elem.click()
