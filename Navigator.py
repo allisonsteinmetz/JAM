@@ -7,7 +7,11 @@ from Authenticator import authenticate
 from DataRetriever import getProjectData, getOrganizationData, getUsers, getRepoLanguages, getCommits, getMerges, getComments, getRepositories
 from Analyzer import analyzeData
 from SearchController import getOrganizations, getProjects
-import time
+import mysql.connector as mariadb
+import json
+from datetime import datetime
+from dateutil.parser import parse as parse_date
+
 
 
 app = Flask(__name__)
@@ -55,11 +59,49 @@ def select():
     print(projName)
     searchType = request.form['searchType']
     # if postanalyzed data retrieved long than an hour ago
+
+    mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='preAnalyzedDB')
+    cursor = mariadb_connection.cursor()
+    cursor = mariadb_connection.cursor(buffered=True)
+    query = "SELECT currentDate FROM preData WHERE repositoryName = %s ORDER BY currentDate ASC LIMIT 1"
+    cursor.execute(query, (projName,))
+    mariadb_connection.commit()
+    result = cursor.fetchone()
+    # f = '%Y-%m-%d %H:%M:%S,'
+    #
+    # present = time.now()
+    # retrievedDate = datetime.strptime(str(result), f)
+    # presentDate = datetime.strptime(present, f)
+    #
+    # print(retrievedDate)
+
+    present = datetime.now()
+    retrievedDate = result[0]
+
+    unicode_text = retrievedDate
+    dt = parse_date(unicode_text)
+
+    print(dt) #analyzed date and time
+    print(present) #present date and time
+
+    timeDiff = present - dt
+    if (timeDiff.seconds <= 3600):
+        print("project was analyzed less than an hour ago")
+
+    else
+        print("project was analyzed longer than an hour ago")
+
+
+
+
+
+
+
     if (searchType == "organizations"):
-        print(time.strftime("%c"))
+        print(datetime.now())
         data = getOrganizationData(authToken, projName)
     else:
-        print(time.strftime("%c"))
+        print(datetime.now())
         data = getProjectData(authToken, projName)
 
     global usersData
@@ -70,7 +112,7 @@ def select():
     global totalData
     totalData = usersData[len(usersData) - 1]
     print totalData
-    print(time.strftime("%c"))
+    print(datetime.now())
     return json.dumps(usersData)
 
 @app.route('/users')

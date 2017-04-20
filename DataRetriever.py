@@ -3,9 +3,9 @@ from flask import Flask, render_template, url_for,  redirect, request
 from flask import make_response
 import mysql.connector as mariadb
 import json
-import time
+from datetime import datetime
 
-now = time.strftime("%c")
+present = datetime.now()
 
 token = 'nothing yet'
 passed = False
@@ -167,16 +167,11 @@ def storePreAnalysisData(repoName, data):
     commit = data.get('commits')
     comment = data.get('comments')
     merge = data.get('merges')
-    # print(merge)
-    # print(comment)
-    # print(commit)
-    # print(language)
-    # print(username)
     query ="DELETE FROM preData WHERE repositoryName = %s"
     cursor.execute(query, (repoName,))
     mariadb_connection.commit()
     sql = "INSERT INTO preData (repositoryName, userName, currentDate, commits, comments, merges, languages) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    cursor.execute(sql, (repoName, str(username), now, str(commit), str(comment), str(merge), str(language)))
+    cursor.execute(sql, (repoName, str(username), present, str(commit), str(comment), str(merge), str(language)))
     mariadb_connection.commit()
 
     return None

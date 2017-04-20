@@ -4,9 +4,9 @@ import mysql.connector as mariadb
 import numpy as np
 from sklearn.cluster import MeanShift, estimate_bandwidth
 import json
-import time
+from datetime import datetime
 
-now = time.strftime("%c")
+present = datetime.now()
 
 default = 0
 contDict = {}       #holds the contribution score of each user, as calculated in calcContribution.
