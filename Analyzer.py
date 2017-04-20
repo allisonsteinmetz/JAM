@@ -348,7 +348,7 @@ def getExtensions():
     mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='LanguageDB')
     cursor = mariadb_connection.cursor()
     cursor = mariadb_connection.cursor(buffered=True)
-    query = "SELECT lang, extensions FROM languages"
+    query = "SELECT extension, language FROM languages"
 
     cursor.execute(query)
     mariadb_connection.commit()
