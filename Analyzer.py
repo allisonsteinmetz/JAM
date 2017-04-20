@@ -11,6 +11,7 @@ now = time.strftime("%c")
 default = 0
 contDict = {}       #holds the contribution score of each user, as calculated in calcContribution.
 commitCount = {}    #holds the number of commits each user has made, for use in calcContribution.
+commentCount = {}   #holds the number of comments each user has made, for use in calcContribution.
 userLangs = {}      #holds the languages each user has coded in, for use in calcContribution.
 statsDict = {}      #holds the statistics about each user. These are generally found in calcContribution.
 branchList = []     #holds a list of all branches, for use in multiple parts of the analyzer.
@@ -45,6 +46,7 @@ def analyzeData(name, data):
     storePostAnalysisData(name, userStats)     #store the data to the database in a post-analyzed form.
     tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': userTeams.get('-'), 'leadership': '10.00', 'uniqueStats' :statsDict.get('-')}
     userStats.append(tempDict)  #store a "total" user. Name '-' cannot be used in GitHub.
+    i = 0
     return userStats    #return the data.
 
 def determineValidTeamUsers():
@@ -99,6 +101,15 @@ def makeLists(data):
             branchLeaders[b][user] = 0
     for user in users:
         userLeadership[user] = 0
+        commentCount[user] = 0
+        contDict[user] = 0      #initialize their contribution to 0
+        userLangs[user] = []    #intiialize their languages to None
+        branches = {}           #initialize their branches to None
+        statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches, 'filesLed' : 0, 'branchesLed' : 0}
+        #userFileCounts[user] = {'default' : 0}  #initialize statsDict and userFileCounts to empty.
+    branches = {}   #repeat the above process for a total user.
+    bCount = []
+    statsDict['-'] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches, 'filesLed' : 0, 'branchesLed' : 0}
     return
 
 def calcLeadership():
@@ -125,6 +136,7 @@ def calcLeadership():
                 statsDict[n]['branchesLed'] += 1            #keep track of this for unique statistics
         else:
             userLeadership[currentusername] += score    #otherwise just assign the regular score.
+            statsDict[currentusername]['branchesLed'] += 1            #keep track of this for unique statistics
     for f in fileLeaders:   #for each file:
         currentuserval = 0  #set a default, max value and name
         currentusername = 'none'
@@ -146,6 +158,7 @@ def calcLeadership():
                 statsDict[n]['filesLed'] += 1       #keep track of this for unique statistics
         else:
             userLeadership[currentusername] += 1    #otherwise just assign 1
+            statsDict[currentusername]['filesLed'] += 1       #keep track of this for unique statistics
 
     max_leader = 0      #set a variable to keep track of the max points
     for user in userLeadership: #check each user's points
@@ -292,15 +305,6 @@ def calcContribution(data):
     total_codeLines = 0
     commits = data.get('commits')   #pull all commits out of our data
     comments = data.get('comments') #pull all comments out of our data
-    for user in users:      #for each user:
-        contDict[user] = 0      #initialize their contribution to 0
-        userLangs[user] = []    #intiialize their languages to None
-        branches = {}           #initialize their branches to None
-        statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches, 'filesLed' : 0, 'branchesLed' : 0}
-        #userFileCounts[user] = {'default' : 0}  #initialize statsDict and userFileCounts to empty.
-    branches = {}   #repeat the above process for a total user.
-    bCount = []
-    statsDict['-'] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches, 'filesLed' : 0, 'branchesLed' : 0}
     #end initialization
     #begin languages for user
     for comm in commits:
@@ -331,6 +335,12 @@ def calcContribution(data):
                 statsDict[userLogin]['branches'].update({comm[4] : comm[3]})    #set the lines of code they've changed in that branch.
             else :                                                 #if it was already there:
                 statsDict[userLogin]['branches'][comm[4]] += comm[3]    #add to the lines already there
+
+    for c in comments:
+        userLogin = c['user']['login']
+        commentCount[userLogin] += 1
+        contDict[userLogin] += .04
+        statsDict[userLogin]['commentCount'] += 1
     #end contribution score & branches for user
     #begin assigning scores
     for user in users:
