@@ -87,9 +87,17 @@ def select():
     timeDiff = present - dt
     if (timeDiff.seconds <= 3600):
         print("project was analyzed less than an hour ago")
-
-    else
+        mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='postAnalyzedDB')
+        cursor = mariadb_connection.cursor()
+        cursor = mariadb_connection.cursor(buffered=True)
+        query = 'SELECT * FROM postData WHERE repositoryName = %s'
+        cursor.execute(query, (projName,))
+        mariadb_connection.commit()
+        result = cursor.fetchall()
+        print(result)
+    else:
         print("project was analyzed longer than an hour ago")
+
 
 
 

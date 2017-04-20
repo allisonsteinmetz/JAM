@@ -364,14 +364,14 @@ def storePostAnalysisData(repoName, data):
         username = user.get('userLogin')
         cont = user.get('contribution')
         lang = user.get('languages')
-        langu = ''.join(lang)
+        langu = '|'.join(lang)
         team = user.get('teams')
-        teama= ''.join(team)
+        teama= '|'.join(team)
         lead = user.get('leadership')
         query ="DELETE FROM postData WHERE repositoryName = %s AND userName = %s"
         cursor.execute(query, (repoName, username))
         mariadb_connection.commit()
-        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership) VALUES (%s, %s, %s, %s, %s, %s)"
-        cursor.execute(sql, (repoName, username, cont, langu, teama, lead))
+        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership, statistics) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, (repoName, username, cont, langu, teama, lead, str(statsDict)))
         mariadb_connection.commit()
     return None
