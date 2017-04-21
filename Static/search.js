@@ -13,6 +13,7 @@ function search() {
                 data = row.insertCell(0);
                 data.innerHTML = response[i];
                 row.setAttribute('onclick', 'getData(this)');
+                row.setAttribute('id', response[i])
             }
         },
         error: function(error) {

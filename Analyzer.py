@@ -4,9 +4,9 @@ import mysql.connector as mariadb
 import numpy as np
 from sklearn.cluster import MeanShift, estimate_bandwidth
 import json
-import time
+from datetime import datetime
 
-now = time.strftime("%c")
+present = datetime.now()
 
 default = 0
 contDict = {}       #holds the contribution score of each user, as calculated in calcContribution.
@@ -358,7 +358,7 @@ def getExtensions():
     mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='LanguageDB')
     cursor = mariadb_connection.cursor()
     cursor = mariadb_connection.cursor(buffered=True)
-    query = "SELECT lang, extensions FROM languages"
+    query = "SELECT extension, language FROM languages"
 
     cursor.execute(query)
     mariadb_connection.commit()
@@ -374,14 +374,14 @@ def storePostAnalysisData(repoName, data):
         username = user.get('userLogin')
         cont = user.get('contribution')
         lang = user.get('languages')
-        langu = ''.join(lang)
+        langu = '|'.join(lang)
         team = user.get('teams')
-        teama= ''.join(team)
+        teama= '|'.join(team)
         lead = user.get('leadership')
         query ="DELETE FROM postData WHERE repositoryName = %s AND userName = %s"
         cursor.execute(query, (repoName, username))
         mariadb_connection.commit()
-        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership) VALUES (%s, %s, %s, %s, %s, %s)"
-        cursor.execute(sql, (repoName, username, cont, langu, teama, lead))
+        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership, statistics) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, (repoName, username, cont, langu, teama, lead, str(statsDict)))
         mariadb_connection.commit()
     return None

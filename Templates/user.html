@@ -208,7 +208,7 @@
                 </div>
                 <div class="column-right">
                     <p>Commits accepted: {{ userData['uniqueStats']['commitCount'] }}</p>
-                    <p>Major Contribution Branches: 3</p>
+                    <p>Major Contribution Branches: {{ userData['uniqueStats']['branches'] }}</p>
                     <p>Number of Comments: {{ userData['uniqueStats']['commentCount'] }}</p>
                 </div>
             </div>
@@ -223,7 +223,7 @@
                     <p>Branches Led: {{ userData['uniqueStats']['branchesLed'] }}</p>
                 </div>
                 <div class="column-right">
-                    <p>Files Created: 21</p>
+                    <p>Files Created: {{ userData['uniqueStats']['filesCreated'] }}</p>
                     <p>Files Led: {{ userData['uniqueStats']['filesLed'] }}</p>
                 </div>
             </div>
@@ -265,7 +265,7 @@
                   </div>
                   <div class="column-right">
                       <p>Commits accepted: {{ userData['uniqueStats']['commitCount'] }}</p>
-                      <p>Major Contribution Branches: 3</p>
+                      <p>Major Contribution Branches: {{ userData['uniqueStats']['branches'] }}</p>
                       <p>Number of Comments: {{ userData['uniqueStats']['commentCount'] }}</p>
                   </div>
               </div>
@@ -292,7 +292,7 @@
                       <p>Branches Led: {{ userData['uniqueStats']['branchesLed'] }}</p>
                   </div>
                   <div class="column-right">
-                      <p>Files Created: 21</p>
+                      <p>Files Created: {{ userData['uniqueStats']['filesCreated'] }}</p>
                       <p>Files Led: {{ userData['uniqueStats']['filesLed'] }}</p>
                   </div>
               </div>
