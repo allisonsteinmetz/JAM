@@ -16,6 +16,7 @@ userLangs = {}      #holds the languages each user has coded in, for use in calc
 statsDict = {}      #holds the statistics about each user. These are generally found in calcContribution.
 branchList = []     #holds a list of all branches, for use in multiple parts of the analyzer.
 fileList = []       #holds a list of all the files with valid extensions. For use in calcTeams.
+fileFirst = []      #begins as a copy of fileVals. Files get removed as a commit makes them. Used to determine which user creates files. Used in calContribution.
 dateList = []       #holds a list of all dates that commits were made on. For use in assignVals.
 userTeamList = []   #holds a list of all users to be considered as on teams.
 global fileExtensions #holds a list of all valid file extensions. Pulled from the database. For use in calcTeams.
@@ -39,6 +40,7 @@ def analyzeData(name, data):
     assignVals(data)            #assign values to branches and dates for use in clustering.
     calcTeams(data)             #calculate which user work with what other users.
     calcLeadership()            #calculate which users led the most by way of branches and files led (most commits to them)
+    calcFirsts(data)
     for user in users:          #for each user, package the data in a way that can be easily parsed on return.
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': userTeams.get(user), 'leadership': userLeadership.get(user), 'uniqueStats' : statsDict.get(user)}
@@ -58,6 +60,26 @@ def determineValidTeamUsers():
         contValue = float(contDict[c])  #otherwise grab their value (and convert from string to float)
         if contValue >= threshhold:     #if they contriuted more than the threshhold
             userTeamList.append(c)      #add them to the list we will find team members for.
+    return
+
+def calcFirsts(data) :
+    commits = data.get('commits')
+    compDict = {}
+    for f in fileFirst:
+        compDict[f] = 'filler'
+    for c in commits:
+        files = c[5]
+        for f in files:
+            if f in fileFirst:
+                compDict[f] = c[0]
+    i = 0
+    for f in compDict:
+        user = compDict[f]
+        print(user)
+        statsDict[user]['filesCreated'] += 1
+        statsDict['-']['filesCreated'] += 1
+        i += 1
+    print(i)
     return
 
 def makeLists(data):
@@ -85,6 +107,8 @@ def makeLists(data):
         ext = e[len(e)-1]
         if ext in extList:      #if that extension is in thelist
             fileVals.append(f)  #add the file to the list of files we will evaluate.
+            fileFirst.append(f)
+    print(fileFirst)
 
     start = commits[len(commits)-1][1]  #Format the date of the first commit
     startDate_unformatted = start.split('T')[0]
@@ -105,11 +129,11 @@ def makeLists(data):
         contDict[user] = 0      #initialize their contribution to 0
         userLangs[user] = []    #intiialize their languages to None
         branches = {}           #initialize their branches to None
-        statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches, 'filesLed' : 0, 'branchesLed' : 0}
+        statsDict[user] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches, 'filesLed' : 0, 'branchesLed' : 0, 'filesCreated' : 0}
         #userFileCounts[user] = {'default' : 0}  #initialize statsDict and userFileCounts to empty.
     branches = {}   #repeat the above process for a total user.
     bCount = []
-    statsDict['-'] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches, 'filesLed' : 0, 'branchesLed' : 0}
+    statsDict['-'] = {'commitCount' : 0, 'codeLines' : 0, 'acceptedCommits' : 0, 'acceptedLines' : 0, 'commentCount' : 0, 'branches' : branches, 'filesLed' : 0, 'branchesLed' : 0, 'filesCreated' : 0}
     return
 
 def calcLeadership():
@@ -320,6 +344,7 @@ def calcContribution(data):
                     if e in fileExtensions:                  #if it matches one
                         if fileExtensions[e] not in userLangs[userLogin]:   #and it isn't already in the list
                             userLangs[userLogin].append(fileExtensions[e])  #add the language to the user's list of languages.
+
     #end languages for user
     #begin contribution score & branches for user
             score = (comm[3] / float(6))    #calculate a base score, being total lines of code divided by 6 (what we consider 1 small change)
@@ -336,11 +361,15 @@ def calcContribution(data):
             else :                                                 #if it was already there:
                 statsDict[userLogin]['branches'][comm[4]] += comm[3]    #add to the lines already there
 
+
+
     for c in comments:
         userLogin = c['user']['login']
         commentCount[userLogin] += 1
         contDict[userLogin] += .04
         statsDict[userLogin]['commentCount'] += 1
+        statsDict['-']['commentCount'] += 1
+
     #end contribution score & branches for user
     #begin assigning scores
     for user in users:
@@ -348,8 +377,15 @@ def calcContribution(data):
         cont_decimal = temp/float(total_score)  #convert into a percentage (decimal)
         cont_percent = "{:.2f}".format(cont_decimal * 100)  #convert into a percentage in format XX.XX - just add a %.
         contDict[user] = cont_percent   #reassign it back into the list.
+        temp = 0
+        for b in statsDict[user]['branches']:
+            b_val = statsDict[user]['branches'][b]
+            if b_val >= 50 :
+                temp += 1
+        statsDict[user]['branches'] = temp
     statsDict['-']['commitCount'] = total_commits   #assign the total user's values.
     statsDict['-']['codeLines'] = total_codeLines
+    statsDict['-']['branches'] = 0
     contDict['-'] = total_score
     #end assigning scores
     return 1;   #return.

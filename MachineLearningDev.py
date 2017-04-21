@@ -47,8 +47,7 @@ if __name__ == '__main__':
         print(user.get('uniqueStats').get('codeLines'))
         branches = user.get('uniqueStats').get('branches')
         print(user.get('languages'))
-        for branch in branches:
-            print(branch)
-            print(branches[branch])
+        print(branches)
+        print(user.get('uniqueStats').get('filesCreated'))
         #for lang in user.get('languages'):
         #    print(lang)
