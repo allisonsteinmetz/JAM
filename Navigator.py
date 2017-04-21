@@ -98,13 +98,6 @@ def select():
     else:
         print("project was analyzed longer than an hour ago")
 
-
-
-
-
-
-
-
     if (searchType == "organizations"):
         print(datetime.now())
         data = getOrganizationData(authToken, projName)
@@ -125,11 +118,11 @@ def select():
 
 @app.route('/users')
 def users():
-    print(usersData)
     return render_template('usersList.html', projectName = projName, usersData = usersData)
 
 @app.route('/userinfo/<username>/<index>')
 def showUserInfo(username, index):
+    print(username)
     return render_template('user.html', projectName = projName, userData = usersData[int(index) - 1], totalData = totalData, data = usersData)
 
 def trainSystem(data):
