@@ -45,7 +45,7 @@ def analyzeData(name, data):
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': userTeams.get(user), 'leadership': userLeadership.get(user), 'uniqueStats' : statsDict.get(user)}
         userStats.append(tempDict)  #and add that data to the return data.
-#    storePostAnalysisData(name, userStats)     #store the data to the database in a post-analyzed form.
+    storePostAnalysisData(name, userStats)     #store the data to the database in a post-analyzed form.
     tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': userTeams.get('-'), 'leadership': '10.00', 'uniqueStats' :statsDict.get('-')}
     userStats.append(tempDict)  #store a "total" user. Name '-' cannot be used in GitHub.
     i = 0
@@ -75,11 +75,9 @@ def calcFirsts(data) :
     i = 0
     for f in compDict:
         user = compDict[f]
-        print(user)
         statsDict[user]['filesCreated'] += 1
         statsDict['-']['filesCreated'] += 1
         i += 1
-    print(i)
     return
 
 def makeLists(data):
@@ -108,7 +106,6 @@ def makeLists(data):
         if ext in extList:      #if that extension is in thelist
             fileVals.append(f)  #add the file to the list of files we will evaluate.
             fileFirst.append(f)
-    print(fileFirst)
 
     start = commits[len(commits)-1][1]  #Format the date of the first commit
     startDate_unformatted = start.split('T')[0]
@@ -196,7 +193,7 @@ def calcLeadership():
         user_rating_formatted = "{:.2f}".format(user_rating)
         userLeadership[user] = user_rating_formatted
 
-    return
+    return 1
 
 
 def calcTeams(data):
@@ -297,7 +294,7 @@ def calcTeams(data):
         else:   #if they DON'T (the important one)
             no = 'No Teammates' #set a variable
             userTeams[user] = no    #assign the value in the dictionary, so there is data there to reference.
-
+    return 1
 
 
 def assignVals(data):
@@ -388,7 +385,7 @@ def calcContribution(data):
     statsDict['-']['branches'] = 0
     contDict['-'] = total_score
     #end assigning scores
-    return 1;   #return.
+    return 1   #return.
 
 def getExtensions():
     mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='LanguageDB')
@@ -399,7 +396,7 @@ def getExtensions():
     cursor.execute(query)
     mariadb_connection.commit()
     result = cursor.fetchall()
-    print(result)
+    #print(result)
     return result;
 
 def storePostAnalysisData(repoName, data):

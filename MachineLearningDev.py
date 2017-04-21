@@ -6,15 +6,36 @@ from Analyzer import analyzeData
 #import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-    username = 'juicearific' #read username
-    password = 'demopw123'  #read password
-    #projname = 'torvalds/linux'
-    projname = 'allisonsteinmetz/JAM'
-    #projname = 'jpaugh/agithub'
-    #projname = 'allisonsteinmetz/FamilyTreeCreator'
-    authToken = authenticate(username, password)
-    projData = getProjectData(authToken, projname)
-    data = analyzeData('dummyname', projData)
+    # username = 'juicearific' #read username
+    # password = 'demopw123'  #read password
+    # #projname = 'torvalds/linux'
+    # projname = 'allisonsteinmetz/JAM'
+    # #projname = 'jpaugh/agithub'
+    # #projname = 'allisonsteinmetz/FamilyTreeCreator'
+    # authToken = authenticate(username, password)
+    # projData = getProjectData(authToken, projname)
+    # data = analyzeData('dummyname', projData)
+
+    real_user = 'juicearific'
+    real_pass = 'demopw123'
+    fake_user = 'fake_username'
+    fake_pass = 'fake_password'
+    real_name = 'allisonsteinmetz/JAM'
+    real_proj_name = 'agithub'
+    real_org_name = 'MyPureCloud'
+    real_user_list = set(["allisonsteinmetz", "Juicearific", "MananVPatel"])
+    fake_list = ['Analyzer.py', 'Analyzer.pyc', 'Authenticator.pyc', 'Navigator.py', 'SearchController.pyc']
+    fake_commit = ('Juicearific', '2017-04-21T03:03:08Z', 'Presentation-Ready\n\n^title', 16, 'master', fake_list)
+    fake_commits = [fake_commit, fake_commit]
+    fake_comments =[]
+    fake_repo_languages = []
+    fake_data = {'users' : real_user_list, 'repoLanguages': fake_repo_languages,
+        'commits': fake_commits, 'comments': fake_comments, 'merge' : 'WIP'}
+
+    token = authenticate(real_user, real_pass)
+
+    haspassed = analyzeData(' ', fake_data)
+    print(haspassed)
 
     #ms = MeanShift()
     #ms.fit(data)
