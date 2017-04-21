@@ -81,12 +81,9 @@ def select():
     unicode_text = retrievedDate
     dt = parse_date(unicode_text)
 
-    print(dt) #analyzed date and time
-    print(present) #present date and time
-
     timeDiff = present - dt
     if (timeDiff.seconds <= 3600):
-        print("project was analyzed less than an hour ago")
+#        print("project was analyzed less than an hour ago")
         mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='postAnalyzedDB')
         cursor = mariadb_connection.cursor()
         cursor = mariadb_connection.cursor(buffered=True)
@@ -94,9 +91,10 @@ def select():
         cursor.execute(query, (projName,))
         mariadb_connection.commit()
         result = cursor.fetchall()
-        print(result)
+#        print(result)
     else:
-        print("project was analyzed longer than an hour ago")
+        something = 'needs to be in this else statement'
+#        print("project was analyzed longer than an hour ago")
 
     if (searchType == "organizations"):
         print(datetime.now())
@@ -118,11 +116,11 @@ def select():
 
 @app.route('/users')
 def users():
+    print(usersData)
     return render_template('usersList.html', projectName = projName, usersData = usersData)
 
 @app.route('/userinfo/<username>/<index>')
 def showUserInfo(username, index):
-    print(username)
     return render_template('user.html', projectName = projName, userData = usersData[int(index) - 1], totalData = totalData, data = usersData)
 
 def trainSystem(data):

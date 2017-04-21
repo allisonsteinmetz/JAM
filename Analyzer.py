@@ -45,7 +45,7 @@ def analyzeData(name, data):
         tempDict = {'userLogin': user, 'contribution': contDict.get(user), 'languages': userLangs.get(user),
             'teams': userTeams.get(user), 'leadership': userLeadership.get(user), 'uniqueStats' : statsDict.get(user)}
         userStats.append(tempDict)  #and add that data to the return data.
-    storePostAnalysisData(name, userStats)     #store the data to the database in a post-analyzed form.
+#    storePostAnalysisData(name, userStats)     #store the data to the database in a post-analyzed form.
     tempDict = {'userLogin': '-', 'contribution': contDict.get('-'), 'languages': '', 'teams': userTeams.get('-'), 'leadership': '10.00', 'uniqueStats' :statsDict.get('-')}
     userStats.append(tempDict)  #store a "total" user. Name '-' cannot be used in GitHub.
     i = 0
@@ -418,6 +418,6 @@ def storePostAnalysisData(repoName, data):
         cursor.execute(query, (repoName, username))
         mariadb_connection.commit()
         sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership, statistics) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        cursor.execute(sql, (repoName, username, cont, langu, teama, lead, str(statsDict)))
+        cursor.execute(sql, (repoName, username, cont, langu, teama, lead, str(statsDict[user])))
         mariadb_connection.commit()
     return None
