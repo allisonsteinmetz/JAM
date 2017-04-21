@@ -41,6 +41,9 @@ def test_searchOrganizations():
     SearchController.getOrganizations(token, real_org_name)
     assert SearchController.passed == True
 
+def test_getUserData():
+
+
 def test_contribution():
     haspassed = Analyzer.calcContribution(fake_data)
     assert haspassed == True

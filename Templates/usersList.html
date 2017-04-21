@@ -34,7 +34,7 @@
                 </tr>
                 {% for user in usersData %}
                   {% if user['userLogin'] != '-' %}
-                    <tr id="userRow" onclick="getUser(this)">
+                    <tr id="userRow" onclick="getUser(this)" name="{{user['userLogin']}}">
                         <td>{{ user['userLogin'] }}</td>
                         <td class="contributionScore">{{ user['contribution'] }}%</td>
                         <td>{{ user['leadership'] }}</td>
