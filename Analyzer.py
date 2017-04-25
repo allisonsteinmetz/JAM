@@ -402,7 +402,6 @@ def getExtensions():
 def storePostAnalysisData(repoName, data):
     mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='postAnalyzedDB')
     cursor = mariadb_connection.cursor()
-
     for user in data:
         username = user.get('userLogin')
         cont = user.get('contribution')
@@ -414,7 +413,11 @@ def storePostAnalysisData(repoName, data):
         query ="DELETE FROM postData WHERE repositoryName = %s AND userName = %s"
         cursor.execute(query, (repoName, username))
         mariadb_connection.commit()
-        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership, statistics) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        cursor.execute(sql, (repoName, username, cont, langu, teama, lead, str(statsDict[user])))
+        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership) VALUES (%s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, (repoName, username, cont, langu, teama, lead))
         mariadb_connection.commit()
+    # for k in statsDict.keys():
+    #     stats = statsDict[k]
+    #     cursor.execute("INSERT INTO postData (statistics) VALUES (%s)" % stats)
+    #     mariadb_connection.commit()
     return None
