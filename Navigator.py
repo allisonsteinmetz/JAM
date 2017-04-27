@@ -91,10 +91,20 @@ def select():
         cursor.execute(query, (projName,))
         mariadb_connection.commit()
         result = cursor.fetchall()
-#        print(result)
+        #print(result)
     else:
         something = 'needs to be in this else statement'
 #        print("project was analyzed longer than an hour ago")
+    #i = 0
+    #for user in result:
+        #0 - repoName
+        #1 - username
+        #2 - contribution score
+        #3 - leadership rating
+        #4 - languages, separated by "|"
+        #5 - teammates, separated by "|"
+        #6 - everything
+        #result[i][x]
 
     if (searchType == "organizations"):
         print(datetime.now())
