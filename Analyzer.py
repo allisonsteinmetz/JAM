@@ -404,6 +404,9 @@ def storePostAnalysisData(repoName, data):
     cursor = mariadb_connection.cursor()
     for user in data:
         username = user.get('userLogin')
+        if(user['userLogin'] == username):
+            stats = user.items()
+        print(stats)
         cont = user.get('contribution')
         lang = user.get('languages')
         langu = '|'.join(lang)
@@ -413,8 +416,8 @@ def storePostAnalysisData(repoName, data):
         query ="DELETE FROM postData WHERE repositoryName = %s AND userName = %s"
         cursor.execute(query, (repoName, username))
         mariadb_connection.commit()
-        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership) VALUES (%s, %s, %s, %s, %s, %s)"
-        cursor.execute(sql, (repoName, username, cont, langu, teama, lead))
+        sql = "INSERT INTO postData (repositoryName, userName, contribution, languages, teams, leadership, statistics) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, (repoName, username, cont, langu, teama, lead, str(stats)))
         mariadb_connection.commit()
     # for k in statsDict.keys():
     #     stats = statsDict[k]
