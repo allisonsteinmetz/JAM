@@ -24,3 +24,7 @@ elem.click()
 browser.implicitly_wait(1000)
 elem = browser.find_element_by_name('allisonsteinmetz')
 elem.click()
+
+elem = browser.find_element_by_id('dropdownBtn')
+Actions action = new Actions(browser);
+action.moveToElement(elem).moveToElement(browser.find_element_by_id('contributionBtn')).click()
