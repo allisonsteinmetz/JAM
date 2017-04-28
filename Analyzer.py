@@ -83,7 +83,7 @@ def calcFirsts(data) :
 def makeLists(data):
     #call the database get function here instead
     global fileExtensions
-    fileExtensions = {'py' : 'Python', 'java' : 'Java', 'class' : 'C#', 'cpp' : 'C++', 'cxx' : 'C++', 'js' : 'JavaScript', 'html' : 'HTML'}
+    fileExtensions = {'py' : 'Python', 'java' : 'Java', 'cs' : 'C#', 'cpp' : 'C++', 'cxx' : 'C++', 'js' : 'JavaScript', 'html' : 'HTML'}
     #end call the database get function here instead
     commits = data.get('commits')       #grab all the commits
     for comm in commits:                #for each one, check:
