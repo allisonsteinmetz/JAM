@@ -59,41 +59,34 @@ def select():
     print(projName)
     searchType = request.form['searchType']
     # if postanalyzed data retrieved long than an hour ago
-    #
-    # mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='preAnalyzedDB')
-    # cursor = mariadb_connection.cursor()
-    # cursor = mariadb_connection.cursor(buffered=True)
-    # query = "SELECT currentDate FROM preData WHERE repositoryName = %s ORDER BY currentDate ASC LIMIT 1"
-    # cursor.execute(query, (projName,))
-    # mariadb_connection.commit()
-    # result = cursor.fetchone()
-    # f = '%Y-%m-%d %H:%M:%S,'
-    #
-    # present = time.now()
-    # retrievedDate = datetime.strptime(str(result), f)
-    # presentDate = datetime.strptime(present, f)
-#     #
-#     # print(retrievedDate)
-#
-#     present = datetime.now()
-#     retrievedDate = result[0]
-#
-#     unicode_text = retrievedDate
-#     dt = parse_date(unicode_text)
-#
-#     timeDiff = present - dt
-#     if (timeDiff.seconds <= 3600):
-# #        print("project was analyzed less than an hour ago")
-#         mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='postAnalyzedDB')
-#         cursor = mariadb_connection.cursor()
-        # cursor = mariadb_connection.cursor(buffered=True)
-        # query = 'SELECT * FROM postData WHERE repositoryName = %s'
-        # cursor.execute(query, (projName,))
-#        mariadb_connection.commit()
-#        result = cursor.fetchall()
-#        #print(result)
-#    else:
-#        something = 'needs to be in this else statement'
+
+    mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='preAnalyzedDB')
+    cursor = mariadb_connection.cursor()
+    cursor = mariadb_connection.cursor(buffered=True)
+    query = "SELECT currentDate FROM preData WHERE repositoryName = %s ORDER BY currentDate ASC LIMIT 1"
+    cursor.execute(query, (projName,))
+    mariadb_connection.commit()
+    result = cursor.fetchone()
+    if result:
+        present = datetime.now()
+        retrievedDate = result[0]
+
+        unicode_text = retrievedDate
+        dt = parse_date(unicode_text)
+
+        timeDiff = present - dt
+        if (timeDiff.seconds <= 3600):
+    #        print("project was analyzed less than an hour ago")
+            mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='postAnalyzedDB')
+            cursor = mariadb_connection.cursor()
+            cursor = mariadb_connection.cursor(buffered=True)
+            query = 'SELECT * FROM postData WHERE repositoryName = %s'
+            cursor.execute(query, (projName,))
+            mariadb_connection.commit()
+            result = cursor.fetchall()
+        #print(result)
+    else:
+        something = 'needs to be in this else statement'
 #        print("project was analyzed longer than an hour ago")
     #i = 0
     #for user in result:
