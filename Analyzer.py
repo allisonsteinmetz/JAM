@@ -72,12 +72,11 @@ def calcFirsts(data) :
         for f in files:
             if f in fileFirst:
                 compDict[f] = c[0]
-    i = 0
     for f in compDict:
         user = compDict[f]
-        statsDict[user]['filesCreated'] += 1
-        statsDict['-']['filesCreated'] += 1
-        i += 1
+        if (user != 'Private User') and (user != 'web-flow') and (user != 'filler'):     #assuming they aren't a private user:
+            statsDict[user]['filesCreated'] += 1
+            statsDict['-']['filesCreated'] += 1
     return
 
 def makeLists(data):
@@ -135,51 +134,40 @@ def makeLists(data):
 
 def calcLeadership():
     for b in branchLeaders:     #for each branch:
-        currentuserval = 0      #set a default, max value and name
-        currentusername = 'none'
-        for user in branchLeaders[b]:   #compare that to each user:
+        currentuserval = 0  #set a default, max value and name
+        currentusernames = []
+        score = 0
+        for user in branchLeaders[b]:     #compare that to each user:
             nextuserval = branchLeaders[b][user]
             if nextuserval > currentuserval:    #if the user we're comparing to is higher:
                 currentuserval = nextuserval    #change the max to be them.
-                currentusername = user
-            elif nextuserval == currentuserval: #if they tie:
-                temp = '-' + currentusername + '.' + user   #add them to the list of leaders.
-                currentusername = temp
-        if b == 'master':   #assign branch score values. Master is worth more as it is generally more important.
+                temparray = []
+                temparray.append(user)
+                currentusernames = temparray
+            elif nextuserval == currentuserval:
+                currentusernames.append(user)
+        if b == 'master':
             score = 5
         else:
             score = 3
-        if currentusername[0] is '-':   #if there are multiple leaders on a branch:
-            names = currentusername.split('.')  #split them into readable names
-            names[0] = names[0][1:]
-            for n in names:
-                userLeadership[n] += (score / float(len(names)))   #assign an adjusted score based on sharing
-                statsDict[n]['branchesLed'] += 1            #keep track of this for unique statistics
-        else:
-            userLeadership[currentusername] += score    #otherwise just assign the regular score.
-            statsDict[currentusername]['branchesLed'] += 1            #keep track of this for unique statistics
+        for name in currentusernames:
+            userLeadership[name] += (score / float(len(currentusernames))) #assign an adjusted score based on sharing
+            statsDict[name]['branchesLed'] += 1  #keep track of this for unique statistics
     for f in fileLeaders:   #for each file:
         currentuserval = 0  #set a default, max value and name
-        currentusername = 'none'
+        currentusernames = []
         for user in fileLeaders[f]:     #compare that to each user:
             nextuserval = fileLeaders[f][user]
             if nextuserval > currentuserval:    #if the user we're comparing to is higher:
                 currentuserval = nextuserval    #change the max to be them.
-                currentusername = user
-            elif nextuserval == currentuserval: #if they tie:
-                temp = '-' + currentusername + '.' + user   #add them to the list of leaders.
-                currentusername = temp
-        if currentusername[0] is '-':   #if there are multiple leaders on the file:
-            names = currentusername.split('.')  #split them into readable names
-            names[0] = names[0][1:]
-            if names[0] is 'none':
-                names.remove('none')
-            for n in names:
-                userLeadership[n] += (1 / float(len(names)))   #assign an adjusted score based on sharing
-                statsDict[n]['filesLed'] += 1       #keep track of this for unique statistics
-        else:
-            userLeadership[currentusername] += 1    #otherwise just assign 1
-            statsDict[currentusername]['filesLed'] += 1       #keep track of this for unique statistics
+                temparray = []
+                temparray.append(user)
+                currentusernames = temparray
+            elif nextuserval == currentuserval:
+                currentusernames.append(user)
+        for name in currentusernames:
+            userLeadership[name] += (1 / float(len(currentusernames))) #assign an adjusted score based on sharing
+            statsDict[name]['filesLed'] += 1  #keep track of this for unique statistics
 
     max_leader = 0      #set a variable to keep track of the max points
     for user in userLeadership: #check each user's points
@@ -188,7 +176,7 @@ def calcLeadership():
 
     for user in userLeadership:     #change numbers into leadership ratings.
         user_score = userLeadership[user]
-        user_percent = user_score / float(max_leader)
+        user_percent = float(user_score) / float(max_leader)
         user_rating = user_percent * 10
         user_rating_formatted = "{:.2f}".format(user_rating)
         userLeadership[user] = user_rating_formatted

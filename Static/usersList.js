@@ -13,7 +13,7 @@ function fixFormatting()
   for(i = 0; i < teams.length; i++){
     userTeams = teams[i];
     unformattedTeams = userTeams.innerHTML
-    userTeams.innerHTML = unformattedTeams.replace(/'|'/gi, '').replace('[u', '').replace(']', '');
+    userTeams.innerHTML = unformattedTeams.replace(/'|'/gi, '').replace('[u', '').replace(']', '').replace(' u', ' ').replace('[','No Teammates');
   }
 }
 function getUser(row)
