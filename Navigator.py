@@ -67,30 +67,23 @@ def select():
     cursor.execute(query, (projName,))
     mariadb_connection.commit()
     result = cursor.fetchone()
-    # f = '%Y-%m-%d %H:%M:%S,'
-    #
-    # present = time.now()
-    # retrievedDate = datetime.strptime(str(result), f)
-    # presentDate = datetime.strptime(present, f)
-    #
-    # print(retrievedDate)
+    if result:
+        present = datetime.now()
+        retrievedDate = result[0]
 
-    present = datetime.now()
-    retrievedDate = result[0]
+        unicode_text = retrievedDate
+        dt = parse_date(unicode_text)
 
-    unicode_text = retrievedDate
-    dt = parse_date(unicode_text)
-
-    timeDiff = present - dt
-    if (timeDiff.seconds <= 3600):
-#        print("project was analyzed less than an hour ago")
-        mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='postAnalyzedDB')
-        cursor = mariadb_connection.cursor()
-        cursor = mariadb_connection.cursor(buffered=True)
-        query = 'SELECT * FROM postData WHERE repositoryName = %s'
-        cursor.execute(query, (projName,))
-        mariadb_connection.commit()
-        result = cursor.fetchall()
+        timeDiff = present - dt
+        if (timeDiff.seconds <= 3600):
+    #        print("project was analyzed less than an hour ago")
+            mariadb_connection = mariadb.connect(user='masterjam', password='jamfordays',host='myrd.csducou8syzm.us-east-1.rds.amazonaws.com', database='postAnalyzedDB')
+            cursor = mariadb_connection.cursor()
+            cursor = mariadb_connection.cursor(buffered=True)
+            query = 'SELECT * FROM postData WHERE repositoryName = %s'
+            cursor.execute(query, (projName,))
+            mariadb_connection.commit()
+            result = cursor.fetchall()
         #print(result)
     else:
         something = 'needs to be in this else statement'
